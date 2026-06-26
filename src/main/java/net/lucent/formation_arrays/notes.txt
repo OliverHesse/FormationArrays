@@ -30,3 +30,16 @@ pros
  - efficient
 cons
  - can be annoying to implement
+
+
+ How do i want to handle a formation where the node itself is unloaded, do i treat that is it being destroyed. keep it running or save it
+ moving that node over to an unloaded nodes area?
+
+
+ TODO FOR NODE HANDLING
+ When a chunk is loaded scan every block and create references if they do not already exist
+
+ when scanning a chunk check if any of the nodes of an unloaded formation are present, If one is not present but is meant to be
+ remove formation
+
+ use a mixin into setBlock, then access the SimpleNodeManger and see if we can add it to the node manager

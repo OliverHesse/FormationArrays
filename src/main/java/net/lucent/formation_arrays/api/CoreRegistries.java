@@ -14,4 +14,6 @@ public class CoreRegistries {
             "physiques",
             ()-> FormationType.PHYSIQUE_CODEC
     );
+
+
 }

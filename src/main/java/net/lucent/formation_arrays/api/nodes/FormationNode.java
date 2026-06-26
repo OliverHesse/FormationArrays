@@ -1,5 +1,7 @@
 package net.lucent.formation_arrays.api.nodes;
 
+import net.minecraft.resources.Identifier;
+
 import java.util.Collection;
 
 /**
@@ -8,7 +10,12 @@ import java.util.Collection;
 public interface FormationNode {
 
 
-    boolean isOfType(NodeType type);
+    boolean isOfType(Identifier type);
 
-    Collection<NodeType> getNodeTypes();
+    Collection<Identifier> getNodeTypes();
+
+
+    default boolean isNode(){
+        return !getNodeTypes().isEmpty();
+    }
 }

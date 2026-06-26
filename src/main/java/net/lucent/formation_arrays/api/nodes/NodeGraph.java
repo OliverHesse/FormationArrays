@@ -2,8 +2,10 @@ package net.lucent.formation_arrays.api.nodes;
 
 import net.lucent.formation_arrays.api.NodeManager;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.Identifier;
 
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * TODO think about renaming to FormationRules or something
@@ -23,12 +25,14 @@ public interface NodeGraph {
      * @param type the type of the accessNode
      * @return true->try to make formation false->don't make formation
      */
-    boolean isValid(NodeManager manager, BlockPos nodePosition,NodeType type);
+    boolean isValid(NodeManager manager, BlockPos nodePosition, Identifier type);
 
 
 
     //The list of access nodes we want to try against, done like this because we might have "multi" graph implementations later
-    Collection<NodeType> accessNodeType();
+    Collection<Identifier> accessNodeType();
 
 
+    //a set of all unique node types in this graph
+    Set<Identifier> getNodeTypes();
 }
