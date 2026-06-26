@@ -1,0 +1,32 @@
+Formations
+
+before we handle formations we need to first handled nodes
+
+formations are graphs, constructed from a set of nodes.
+
+
+for this reason we need to be able to keep track of these nodes.
+
+I want ANYTHING to have the ability to be treated as a node.
+
+for blocks and block entities it is simple, hold a map of blockPos -> node
+
+for Entities, it can get a bit Trickier. This is because their block pos may be changing constantly, and multiple entities may be in the same block position
+
+option 1
+
+when getting nodes in a location loop through all entities and check against the position
+
+pros
+ - easy to implement and easy to not fuck up
+cons
+ - every check needs to recompute these positions
+
+option 2
+
+each tick check their current pos against the one they are in the map entry of, if changed move
+
+pros
+ - efficient
+cons
+ - can be annoying to implement

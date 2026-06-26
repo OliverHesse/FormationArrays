@@ -1,0 +1,13 @@
+{
+  "itemGroup.formation_arrays": "Example Mod Tab",
+  "block.formation_arrays.example_block": "Example Block",
+  "item.formation_arrays.example_item": "Example Item",
+
+  "formation_arrays.configuration.title": "FormationArrays Configs",
+  "formation_arrays.configuration.section.formation_arrays.common.toml": "FormationArrays Configs",
+  "formation_arrays.configuration.section.formation_arrays.common.toml.title": "FormationArrays Configs",
+  "formation_arrays.configuration.items": "Item List",
+  "formation_arrays.configuration.logDirtBlock": "Log Dirt Block",
+  "formation_arrays.configuration.magicNumberIntroduction": "Magic Number Text",
+  "formation_arrays.configuration.magicNumber": "Magic Number"
+}
