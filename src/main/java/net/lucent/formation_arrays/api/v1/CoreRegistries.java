@@ -1,8 +1,8 @@
-package net.lucent.formation_arrays.api;
+package net.lucent.formation_arrays.api.v1;
 
 import net.lucent.formation_arrays.FormationArrays;
-import net.lucent.formation_arrays.api.formations.Formation;
-import net.lucent.formation_arrays.api.formations.FormationType;
+import net.lucent.formation_arrays.api.v1.formations.Formation;
+import net.lucent.formation_arrays.api.v1.formations.FormationType;
 import net.minecraft.core.Registry;
 import net.zic.zenithlib.registry.RegistryHelper;
 
@@ -14,6 +14,7 @@ public class CoreRegistries {
             "physiques",
             ()-> FormationType.PHYSIQUE_CODEC
     );
+
 
 
 }

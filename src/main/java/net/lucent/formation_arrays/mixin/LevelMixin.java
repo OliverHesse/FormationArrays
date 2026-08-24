@@ -1,6 +1,6 @@
 package net.lucent.formation_arrays.mixin;
 
-import net.lucent.formation_arrays.api.nodes.FormationNodeProvider;
+import net.lucent.formation_arrays.api.v1.nodes.FormationNodeProvider;
 import net.lucent.formation_arrays.impl.SimpleNodeManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -30,7 +30,7 @@ public class LevelMixin {
         if(cir.getReturnValue() != true) return;
         Level self = (Level) (Object) this;
         if(SimpleNodeManager.getInstance() == null) return;
-
+        if(self.isClientSide()) return; //TODO might change this later
 
         SimpleNodeManager.getInstance().removeBlockNodeAt(
                 self,

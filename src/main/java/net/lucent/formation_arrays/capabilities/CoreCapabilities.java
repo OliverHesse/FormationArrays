@@ -1,12 +1,9 @@
 package net.lucent.formation_arrays.capabilities;
 
 import net.lucent.formation_arrays.FormationArrays;
-import net.lucent.formation_arrays.api.nodes.FormationNode;
+import net.lucent.formation_arrays.api.v1.nodes.FormationNode;
 import net.lucent.formation_arrays.common.util.ModTags;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;

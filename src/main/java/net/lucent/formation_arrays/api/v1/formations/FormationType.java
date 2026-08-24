@@ -1,9 +1,9 @@
-package net.lucent.formation_arrays.api.formations;
+package net.lucent.formation_arrays.api.v1.formations;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import io.netty.buffer.ByteBuf;
-import net.lucent.formation_arrays.api.CoreRegistries;
+import net.lucent.formation_arrays.api.v1.CoreRegistries;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 

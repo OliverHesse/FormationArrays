@@ -1,6 +1,6 @@
 package net.lucent.formation_arrays.capabilities;
 
-import net.lucent.formation_arrays.api.nodes.FormationNode;
+import net.lucent.formation_arrays.api.v1.nodes.FormationNode;
 import net.minecraft.resources.Identifier;
 
 import java.util.Collection;

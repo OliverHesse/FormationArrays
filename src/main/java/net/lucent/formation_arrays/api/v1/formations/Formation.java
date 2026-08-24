@@ -1,6 +1,6 @@
-package net.lucent.formation_arrays.api.formations;
+package net.lucent.formation_arrays.api.v1.formations;
 
-import net.lucent.formation_arrays.api.nodes.NodeGraph;
+import net.lucent.formation_arrays.api.v1.nodes.NodeGraph;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;

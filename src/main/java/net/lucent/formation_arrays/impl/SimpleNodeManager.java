@@ -2,8 +2,8 @@ package net.lucent.formation_arrays.impl;
 
 import net.lucent.formation_arrays.FormationArrays;
 import net.lucent.formation_arrays.api.NodeManager;
-import net.lucent.formation_arrays.api.nodes.FormationNode;
-import net.lucent.formation_arrays.api.nodes.FormationNodeProvider;
+import net.lucent.formation_arrays.api.v1.nodes.FormationNode;
+import net.lucent.formation_arrays.api.v1.nodes.FormationNodeProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
@@ -29,10 +29,11 @@ public class SimpleNodeManager implements NodeManager {
 
 
 
-    //should include duplicates since multiple providers may try to provide the same node type
-    private final HashMap<Identifier,ArrayList<FormationNodeProvider>> placedNodesOfType = new HashMap<>();
 
+    private final HashMap<Identifier,HashSet<FormationNodeProvider>> placedNodesOfType = new HashMap<>();
 
+    //important when removing, since providers are lazy, we cannot guarantee the implementation will properly handle type changes
+    private final HashMap<FormationNodeProvider,Collection<Identifier>> formationNodeTypes = new HashMap<>();
     //make sure that when removing nodes, before applying logic for node type removal check if any of that type are still present
 
 
@@ -58,11 +59,24 @@ public class SimpleNodeManager implements NodeManager {
 
         FormationNode node = nodeProvider.getNode(level);
         if(node == null) return;
+
+        if(!node.isNode()) return;
+
         System.out.println("trying to add node at position : "+pos);
-        if(node.getNodeTypes().isEmpty()) return;
+        System.out.println("side : " + (level.isClientSide() ? "Client":"Server"));
+        Collection<Identifier> types = node.getNodeTypes();
 
+        DimensionNode dimensionNode = new DimensionNode(level.dimension().identifier(),pos);
+        dimensionNodes.computeIfAbsent(dimensionNode,key->new HashSet<>());
+        dimensionNodes.get(dimensionNode).add(nodeProvider);
 
+        formationNodeToWorldPosition.put(nodeProvider,dimensionNode);
 
+        for(Identifier type : types){
+            placedNodesOfType.computeIfAbsent(type,key->new HashSet<>());
+            placedNodesOfType.get(type).add(nodeProvider);
+        }
+        formationNodeTypes.put(nodeProvider,types);
         //TODO add the node here
     }
     public void removeBlockNodeAt(Level level, BlockPos pos){
@@ -79,8 +93,20 @@ public class SimpleNodeManager implements NodeManager {
     @Override
     public void removeNode(FormationNodeProvider nodeProvider) {
         if(!hasNode(nodeProvider)) return;
+        DimensionNode dimensionNode = formationNodeToWorldPosition.remove(nodeProvider);
+        dimensionNodes.get(dimensionNode).remove(nodeProvider);
+        if(dimensionNodes.get(dimensionNode).isEmpty()) dimensionNodes.remove(dimensionNode);
 
-        System.out.println("trying to remove node at position : "+formationNodeToWorldPosition.get(nodeProvider).pos);
+        Collection<Identifier> toRemoveTypes = formationNodeTypes.remove(nodeProvider);
+
+        for(Identifier type : toRemoveTypes){
+            placedNodesOfType.get(type).remove(nodeProvider);
+            if(placedNodesOfType.get(type).isEmpty()) placedNodesOfType.remove(type);
+        }
+
+        //TODO handle formation construction and deconstruction from this
+
+        System.out.println("trying to remove node at position : "+dimensionNode.pos);
     }
 
     @Override

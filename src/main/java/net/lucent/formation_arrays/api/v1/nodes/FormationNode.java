@@ -1,4 +1,4 @@
-package net.lucent.formation_arrays.api.nodes;
+package net.lucent.formation_arrays.api.v1.nodes;
 
 import net.minecraft.resources.Identifier;
 
