@@ -1,11 +1,12 @@
-package net.lucent.formation_arrays.api.v2.nodes;
+package net.lucent.formation_arrays.api.v2.nodes.graph;
 
+import net.lucent.formation_arrays.api.v2.nodes.FormationNodeProvider;
+import net.lucent.formation_arrays.api.v2.nodes.FormationNodeType;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.gameevent.BlockPositionSource;
 
 import java.util.Collection;
 
-public interface NodeGraph {
+public interface NodeGraphDefinition {
 
     /**
      * attempts to superimpose the NodeGraph onto the world if a node of this graph is placed into the world
@@ -14,7 +15,7 @@ public interface NodeGraph {
      * @param provider the provider to access nodes
      * @return true-> can superimpose. false -> cannot superimpose
      */
-    boolean trySuperimpose(BlockPos sourcePos,FormationNodeType sourceType,FormationNodeProvider provider);
+    boolean trySuperimpose(BlockPos sourcePos, FormationNodeType sourceType, FormationNodeProvider provider);
 
     /**
      * @param type the type we want to check

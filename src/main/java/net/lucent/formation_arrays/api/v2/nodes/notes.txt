@@ -1,1 +1,1 @@
-create some type of Node graph instance, that maps each graph node to a real node an position
+create some type of Node graph instance, that maps each graph node to a real node and position

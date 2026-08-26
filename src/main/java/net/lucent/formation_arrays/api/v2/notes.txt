@@ -1,0 +1,39 @@
+Formations
+    Formation,FormationDefinition and FormationInstance
+
+    The node manager would store an active formationInstance, along with a nodeGraphInstance
+
+    the formation is only deactivated when all nodes are unloaded
+
+    the formation is destroyed the moment a single node is destroyed (for now)
+
+Nodes
+    - consider letting nodes have multiple types
+    - then when running checks a node graph instance stores the nodes/holder itself
+    - if we want special effects depending on extra types (e.g flag NEEDS to be water type, but if fire provide bonus)
+      we can just check if that node is of type
+    - can also allow for type combination requirements
+    - also slightly eases loading risk i mentioned since the likelihood of 2 nodes sharing the exact combination is unlikely
+Formation Node Manager
+    - a node holder is used to let us store both entity and block nodes together easily.
+    - a node reference allows us to "group" unloaded and loaded nodes, so formation superimpose checks can still work
+      even if 3/5 nodes are un loaded. So node providers provide a NodeReference.
+    - the provider will contain "hard" methods that let you get only loaded or only unloaded references.
+    - so there will be getNode, getLoadedNode, getUnloadedNode etc
+    - since a UnLoaded reference does not know what it was before when a potential node is loaded we check if an unloaded
+      node of that type exists at those coordinates
+    - if so change the UnLoaded to Loaded
+    - this can cause slight issues if say an entity and a block share a space anda fter an update the block becomes a node
+      while the entity was the node so is loaded before the entity and "takes" the node position
+
+
+
+Node Manager
+    - holds a map of position to map<NodeRef> (note for hashing purposes ensure that the block and unloaded ref store dimension id as well)
+    - holds a set of all unloaded NodeRef since these can easily be accessed through block pos + dimension id
+    - no need for "quick access" maps, since we cannot assume things like node type stay consistent
+    - hell we cannot assume that position is consistent either, but that wil lbe handled by listening to entity move/check every tick
+    - and that should be all for data types, the node manager does not handle graphs or anything.
+
+Node Provider
+    - update to use references
