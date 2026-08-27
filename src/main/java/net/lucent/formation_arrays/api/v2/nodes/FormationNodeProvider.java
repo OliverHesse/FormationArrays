@@ -8,8 +8,9 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
- * An interface that defines how something like a NodeManager would provide FormationNodes
- * Does not control adding or removing nodes
+ * An interface that defines how something like a NodeManager would provide information
+ * About Formation Nodes,
+ * Does not directly provide them, but lets you get information about what node types a block position contains
  */
 public interface FormationNodeProvider {
 
@@ -28,19 +29,4 @@ public interface FormationNodeProvider {
      */
     Collection<FormationNodeType> getTypes(Level level, BlockPos pos);
 
-    /**
-     *
-     * @param level the level we want to check
-     * @param pos the position we want to check
-     * @param type the formation node type we want
-     * @return a formation node of type in that block pos
-     */
-    FormationNode getNode(Level level,BlockPos pos,FormationNodeType type);
-
-    /**
-     * @param level the level we want to check
-     * @param pos the position we want to check
-     * @return all nodes in that block pos
-     */
-    Collection<FormationNode> getNodes(Level level,BlockPos pos);
 }

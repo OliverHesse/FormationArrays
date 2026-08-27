@@ -5,12 +5,14 @@ import net.lucent.formation_arrays.impl.SimpleNodeManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-
+//TODO change to LevelChunk setBlockState
 @Mixin(Level.class)
 public class LevelMixin {
 
@@ -28,7 +30,9 @@ public class LevelMixin {
             CallbackInfoReturnable<Boolean> cir
     ) {
         if(cir.getReturnValue() != true) return;
+        System.out.println("block in world was placed");
         Level self = (Level) (Object) this;
+
         if(SimpleNodeManager.getInstance() == null) return;
         if(self.isClientSide()) return; //TODO might change this later
 

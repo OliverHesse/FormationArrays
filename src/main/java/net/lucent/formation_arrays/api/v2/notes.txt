@@ -6,7 +6,8 @@ Formations
     the formation is only deactivated when all nodes are unloaded
 
     the formation is destroyed the moment a single node is destroyed (for now)
-
+Node Type:
+    - should it be a registry object? or just an arbitrary id? yes
 Nodes
     - consider letting nodes have multiple types
     - then when running checks a node graph instance stores the nodes/holder itself
@@ -25,7 +26,8 @@ Formation Node Manager
     - if so change the UnLoaded to Loaded
     - this can cause slight issues if say an entity and a block share a space anda fter an update the block becomes a node
       while the entity was the node so is loaded before the entity and "takes" the node position
-
+    - when a block is set dont just check if it is a node also check if an unloaded node is meant to be at that position.
+      because if so we need to remove that unloaded node
 
 
 Node Manager
@@ -35,5 +37,8 @@ Node Manager
     - hell we cannot assume that position is consistent either, but that wil lbe handled by listening to entity move/check every tick
     - and that should be all for data types, the node manager does not handle graphs or anything.
 
+    - once a node has been "discovered" until removed it must always be stored, this means we must. at all times keep a hold of all unloaded nodes
+    - luckily all this needs is to convert all ref to an unloaded reference. and since this only happens on world shutdown, no need
+      to worry about formations getting funny
 Node Provider
     - update to use references

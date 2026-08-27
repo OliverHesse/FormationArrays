@@ -1,7 +1,13 @@
 package net.lucent.formation_arrays;
 
+import net.lucent.formation_arrays.api.v1.nodes.FormationNode;
+import net.lucent.formation_arrays.capabilities.CoreCapabilities;
+import net.lucent.formation_arrays.mixin.BlockCapabilityAccessor;
+import net.lucent.formation_arrays.util.BlockCapabilityUtil;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -33,8 +39,12 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.Collection;
+import java.util.Map;
+
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(FormationArrays.MOD_ID)
+@EventBusSubscriber(modid = FormationArrays.MOD_ID)
 public class FormationArrays {
     // Define mod id in a common place for everything to reference
     public static final String MOD_ID = "formation_arrays";
@@ -51,5 +61,14 @@ public class FormationArrays {
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
+    @SubscribeEvent
+    public static void onStarting(ServerStartedEvent event){
+        Collection<Block> blocks = BlockCapabilityUtil.getPossibleBlocks(CoreCapabilities.BLOCK_FORMATION_NODE);
+        System.out.println("nodes");
+        for(Block block : blocks) {
+            System.out.println(block.getName());
+        }
+
+    }
 
 }

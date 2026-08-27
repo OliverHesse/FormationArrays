@@ -7,6 +7,7 @@ import net.minecraft.core.Registry;
 import net.zic.zenithlib.registry.RegistryHelper;
 
 public class CoreRegistries {
+
     public static final Registry<Formation> FORMATIONS = RegistryHelper.registry(FormationArrays.MOD_ID,"formations");
 
     public static final RegistryHelper.DataPackRegistry<FormationDefinition> FORMATION_DEFINITIONS = RegistryHelper.dataPackRegistry(
@@ -14,5 +15,7 @@ public class CoreRegistries {
             "formations",
             ()-> Formation.FORMATION_DEFINITIONS
     );
+
+
 
 }

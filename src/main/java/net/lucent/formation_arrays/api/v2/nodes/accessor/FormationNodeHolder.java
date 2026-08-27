@@ -2,6 +2,7 @@ package net.lucent.formation_arrays.api.v2.nodes.accessor;
 
 
 import net.lucent.formation_arrays.api.v2.nodes.FormationNode;
+import net.lucent.formation_arrays.api.v2.nodes.FormationNodeType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
@@ -16,7 +17,7 @@ public sealed interface FormationNodeHolder permits
 
         FormationNode getNode(Level level);
         BlockPos getPosition();
-        Identifier getDimension();
+
         record EntityFormationNodeHolder(
                 Entity entity) implements FormationNodeHolder {
 
@@ -30,13 +31,11 @@ public sealed interface FormationNodeHolder permits
                 return entity.blockPosition();
             }
 
-            @Override
-            public Identifier getDimension() {
-                return entity.level().dimension().identifier();
-            }
+
+
         }
         //todo potentially no need to store the block, note also store dimension id for hashing
-        record BlockFormationNodeHolder(BlockPos pos, Identifier dimension) implements FormationNodeHolder {
+        record BlockFormationNodeHolder(BlockPos pos) implements FormationNodeHolder {
             @Override
             public FormationNode getNode(Level level) {
 
@@ -48,9 +47,5 @@ public sealed interface FormationNodeHolder permits
                 return pos;
             }
 
-            @Override
-            public Identifier getDimension() {
-                return dimension;
-            }
         }
 }

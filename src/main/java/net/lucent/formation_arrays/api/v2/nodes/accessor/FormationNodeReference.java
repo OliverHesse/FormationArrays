@@ -13,8 +13,8 @@ public interface FormationNodeReference {
     FormationNode get(Level level);
     FormationNodeHolder getHolder();
     BlockPos getPos();
-    Identifier getDimension();
     FormationNodeType getNodeType(Level level);
+    boolean isType(FormationNodeType type,Level level);
 
     record Loaded(FormationNodeHolder holder) implements FormationNodeReference{
 
@@ -44,11 +44,15 @@ public interface FormationNodeReference {
         }
 
         @Override
-        public Identifier getDimension() {
-            return null;
+        public boolean isType(FormationNodeType type, Level level) {
+            return holder.getNode(level) != null && holder.getNode(level).isType(type);
         }
+
+
+
+
     }
-    record Unloaded(Identifier dimension,BlockPos pos, FormationNodeType type) implements FormationNodeReference{
+    record Unloaded(BlockPos pos, FormationNodeType type) implements FormationNodeReference{
 
         @Override
         public boolean isLoaded() {
@@ -76,8 +80,9 @@ public interface FormationNodeReference {
         }
 
         @Override
-        public Identifier getDimension() {
-            return dimension;
+        public boolean isType(FormationNodeType type, Level level) {
+            return type == this.type;
         }
+
     }
 }
