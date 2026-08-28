@@ -7,8 +7,12 @@ import net.lucent.formation_arrays.capabilities.CoreCapabilities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 
 public sealed interface FormationNodeHolder permits
         FormationNodeHolder.EntityFormationNodeHolder,
@@ -39,8 +43,12 @@ public sealed interface FormationNodeHolder permits
         record BlockFormationNodeHolder(BlockPos pos) implements FormationNodeHolder {
             @Override
             public FormationNode getNode(Level level) {
+                ChunkPos chunkPos = ChunkPos.containing(pos);
 
-                return level.getCapability(CoreCapabilities.BLOCK_FORMATION_NODE,pos);
+                ChunkAccess access = level.getChunkSource().getChunk(chunkPos.x(), chunkPos.z(), ChunkStatus.FULL,false);
+                if(access == null) return null;
+                BlockState state = access.getBlockState(pos);
+                return CoreCapabilities.BLOCK_FORMATION_NODE.getCapability(level,pos,state,null,null);
             }
 
             @Override
