@@ -9,6 +9,7 @@ import net.lucent.formation_arrays.api.v2.nodes.accessor.FormationNodeHolder;
 import net.lucent.formation_arrays.api.v2.nodes.accessor.FormationNodeReference;
 import net.lucent.formation_arrays.api.v2.nodes.events.NodeTypesChangedEvent;
 import net.lucent.formation_arrays.capabilities.CoreCapabilities;
+import net.lucent.formation_arrays.util.BlockCapabilityUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -42,15 +43,11 @@ public class DimensionNodeManager extends SavedData {
     );
 
     private final Map<BlockPos,Set<FormationNodeType>> cachedTypes = new HashMap<>();
-    //if a position is unloaded ALL nodes are unloaded
-    private final Set<BlockPos> unloadedPositions = new HashSet<>();
 
 
 
     private final ServerLevel level;
     private final Map<BlockPos, Set<FormationNodeReference>> nodes = new HashMap<>();
-
-    private final Set<FormationNodeReference> unloadedNodes = new HashSet<>();
 
     public DimensionNodeManager(ServerLevel level) {
         this.level = level;
@@ -61,13 +58,15 @@ public class DimensionNodeManager extends SavedData {
         createUnloadedStates(savedStates);
     }
 
-    public List<NodeState> getNodeStates(){
+    public List<NodeState> getNodeStates() {
         Set<NodeState> uniqueStates = new HashSet<>();
+
         for(Set<FormationNodeReference> refSet : nodes.values()){
             for(FormationNodeReference ref :refSet){
                 for(FormationNodeType type : ref.getNodeTypes(level)) uniqueStates.add(new NodeState(type,ref.getPos()));
             }
         }
+        System.out.println("saving states ("+uniqueStates.size()+")");
         return List.copyOf(uniqueStates);
     }
 
@@ -76,27 +75,19 @@ public class DimensionNodeManager extends SavedData {
      * @param pos
      */
     public void clearNodesAt(BlockPos pos){
-        System.out.println("clearing nodes");
-        unloadedPositions.remove(pos);
         if(!nodes.containsKey(pos)) return;
-        Collection<FormationNodeReference> refs = nodes.get(pos);
-        unloadedNodes.removeAll(refs);
-        refs.clear();
-
+        nodes.get(pos).clear();
+        setDirty();
     }
 
     public void unloadNodes(BlockPos pos){
         if(!nodes.containsKey(pos)) return;
         Set<FormationNodeReference> refSet = nodes.get(pos);
-        Set<FormationNodeReference> unloadedNodes = new HashSet<>();
-        for(FormationNodeType type : cachedTypes.getOrDefault(pos,Set.of())){
-            unloadedNodes.add(new FormationNodeReference.Unloaded(pos,type));
-            System.out.println("node of type "+ type+ " unloaded");
-        }
         refSet.clear();
-        refSet.addAll(unloadedNodes);
-        this.unloadedNodes.addAll(unloadedNodes);
-        unloadedPositions.add(pos);
+
+        for(FormationNodeType type : cachedTypes.getOrDefault(pos,Set.of())){
+            refSet.add(new FormationNodeReference.Unloaded(pos,type));
+        }
     }
     /**
      * ensures no nodes are held as unloaded, then adds the new node.
@@ -110,43 +101,50 @@ public class DimensionNodeManager extends SavedData {
 
         refSet.add(reference);
 
-        //TODO consider removing? since i do not think we will ever not add unloaded through internal methods
-        if(reference instanceof FormationNodeReference.Unloaded) {
-            unloadedNodes.add(reference);
-            unloadedPositions.add(reference.getPos());
-        }
+        setDirty();
+
 
     }
 
     protected void createUnloadedStates(List<NodeState> states){
+
         for(NodeState state : states){
             addNode(new FormationNodeReference.Unloaded(state.pos(),state.type()));
         }
+
     }
     public void addNode(Entity entity){
         if(entity.getCapability(CoreCapabilities.ENTITY_FORMATION_NODE) == null) return;
         addNode(new FormationNodeReference.Loaded(new FormationNodeHolder.EntityFormationNodeHolder(entity)));
     }
     public void addNode(BlockPos pos){
-        System.out.println("trying to add node for "+level.getBlockState(pos).getBlock());
         if(level.getCapability(CoreCapabilities.BLOCK_FORMATION_NODE,pos) == null) return;
-        System.out.println("adding node");
+
         addNode(new FormationNodeReference.Loaded(new FormationNodeHolder.BlockFormationNodeHolder(pos)));
     }
     public void removeNode(Entity entity){
         //TODO
     }
+
     public void removeNode(BlockPos pos){
-        //TODO
+        FormationNodeReference reference = FormationNodeReference.of(pos);
+        nodes.computeIfPresent(pos,(key,val)->{
+            val.remove(reference);
+            return val.isEmpty() ? null : val;
+        });
+        setDirty();
+
+    }
+
+    public void updateNode(BlockPos pos){
+        //check if node is still a valid node
+        if(BlockCapabilityUtil.canBeNode(level.getBlockState(pos).getBlock())) addNode(pos);
+        else removeNode(pos);
     }
     public Collection<BlockPos> getAllNodeLocations(){
         return nodes.keySet();
     }
-    //if one is not loaded we can assume they are all not loaded
-    public boolean isNodeTypeLoaded(BlockPos pos,FormationNodeType type){
-        FormationNodeReference unloaded = new FormationNodeReference.Unloaded(pos,type);
-        return !unloadedNodes.contains(unloaded);
-    }
+
 
     public boolean hasNodeType(BlockPos pos, FormationNodeType type) {
         if(!nodes.containsKey(pos)) return false;
@@ -174,7 +172,13 @@ public class DimensionNodeManager extends SavedData {
     }
 
     public void calculateCachedTypes(){
+
+        Set<BlockPos> cachedPos = new HashSet<>(cachedTypes.keySet());
+
         for(BlockPos pos : nodes.keySet()){
+
+            cachedPos.remove(pos);
+
             if(!isLoaded(pos)) continue;
 
             Set<FormationNodeType> cachedTypeSet = cachedTypes.computeIfAbsent(pos,key->new HashSet<>());
@@ -194,5 +198,11 @@ public class DimensionNodeManager extends SavedData {
             System.out.println("updated types for pos "+ pos);
             triggerTypesChangedEvent(newTypes,removedTypes,pos);
         }
+
+        for(BlockPos discardedPos : cachedPos){
+            Set<FormationNodeType> types = cachedTypes.remove(discardedPos);
+            triggerTypesChangedEvent(Set.of(),types,discardedPos);
+        }
+        setDirty();
     }
 }

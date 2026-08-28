@@ -39,9 +39,9 @@ public class FormationArrayCommands {
         Collection< BlockPos> nodeLocations = nodeManager.getAllNodeLocations();
         MutableComponent output = Component.literal("=== Nodes ===");
         for(BlockPos pos : nodeLocations){
+            String state = nodeManager.isLoaded(pos) ? "Loaded" : "Unloaded";
             for(FormationNodeType type : nodeManager.getTypes(pos)){
-                String state = nodeManager.isNodeTypeLoaded(pos,type) ? "Loaded" : "Unloaded";
-                output.append(Component.literal("\n("+pos.toShortString()+")"+state));
+                output.append(Component.literal("\n("+pos.toShortString()+") "+type.type()+ " "+state));
             }
         }
         context.getSource().sendSuccess(()->output,false);

@@ -2,7 +2,9 @@ package net.lucent.formation_arrays.mixin;
 
 import net.lucent.formation_arrays.api.v1.nodes.FormationNodeProvider;
 import net.lucent.formation_arrays.impl.SimpleNodeManager;
+import net.lucent.formation_arrays.node_handling.DimensionNodeManager;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.BlockCapability;
@@ -33,21 +35,10 @@ public class LevelMixin {
 
         Level self = (Level) (Object) this;
 
-        if(SimpleNodeManager.getInstance() == null) return;
-        if(self.isClientSide()) return; //TODO might change this later
-        /*
-        SimpleNodeManager.getInstance().removeBlockNodeAt(
-                self,
-                pos
-        );
+        if(!(self instanceof ServerLevel serverLevel)) return;
 
+        DimensionNodeManager manager = DimensionNodeManager.getNodeManger(serverLevel);
 
-        SimpleNodeManager.getInstance().addNode(
-                self,
-                pos,
-                new FormationNodeProvider.BlockFormationNodeProvider(blockState.getBlock(),pos)
-        );
-
-         */
+        manager.updateNode(pos);
     }
 }

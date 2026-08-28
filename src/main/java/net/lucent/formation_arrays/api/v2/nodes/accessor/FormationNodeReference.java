@@ -4,6 +4,7 @@ import net.lucent.formation_arrays.api.v2.nodes.FormationNode;
 import net.lucent.formation_arrays.api.v2.nodes.FormationNodeType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 
 import java.util.Collection;
@@ -19,6 +20,12 @@ public interface FormationNodeReference {
     Collection<FormationNodeType> getNodeTypes(Level level);
     boolean isType(FormationNodeType type,Level level);
 
+    static Loaded of(BlockPos pos){
+        return new Loaded(new FormationNodeHolder.BlockFormationNodeHolder(pos));
+    }
+    static Loaded of(Entity entity){
+        return new Loaded(new FormationNodeHolder.EntityFormationNodeHolder(entity));
+    }
     record Loaded(FormationNodeHolder holder) implements FormationNodeReference{
 
         @Override

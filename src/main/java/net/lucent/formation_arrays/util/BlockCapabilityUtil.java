@@ -1,5 +1,7 @@
 package net.lucent.formation_arrays.util;
 
+import net.lucent.formation_arrays.api.v2.CoreRegistries;
+import net.lucent.formation_arrays.capabilities.CoreCapabilities;
 import net.lucent.formation_arrays.mixin.BlockCapabilityAccessor;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.capabilities.BlockCapability;
@@ -16,5 +18,9 @@ public class BlockCapabilityUtil {
         return ((BlockCapabilityAccessor<T, Void>) (Object) capability)
                 .formation_arrays$getProviders()
                 .keySet();
+    }
+
+    public static boolean canBeNode(Block block){
+        return getPossibleBlocks(CoreCapabilities.BLOCK_FORMATION_NODE).contains(block);
     }
 }
