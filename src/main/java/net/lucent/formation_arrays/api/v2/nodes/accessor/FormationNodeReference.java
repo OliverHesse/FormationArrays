@@ -6,6 +6,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 
+import java.util.Collection;
+import java.util.List;
+
 public interface FormationNodeReference {
 
 
@@ -13,7 +16,7 @@ public interface FormationNodeReference {
     FormationNode get(Level level);
     FormationNodeHolder getHolder();
     BlockPos getPos();
-    FormationNodeType getNodeType(Level level);
+    Collection<FormationNodeType> getNodeTypes(Level level);
     boolean isType(FormationNodeType type,Level level);
 
     record Loaded(FormationNodeHolder holder) implements FormationNodeReference{
@@ -39,8 +42,8 @@ public interface FormationNodeReference {
         }
 
         @Override
-        public FormationNodeType getNodeType(Level level) {
-            return get(level).getType();
+        public Collection<FormationNodeType> getNodeTypes(Level level) {
+            return get(level).getTypes();
         }
 
         @Override
@@ -75,8 +78,8 @@ public interface FormationNodeReference {
         }
 
         @Override
-        public FormationNodeType getNodeType(Level level) {
-            return type;
+        public Collection<FormationNodeType> getNodeTypes(Level level) {
+            return List.of(type);
         }
 
         @Override

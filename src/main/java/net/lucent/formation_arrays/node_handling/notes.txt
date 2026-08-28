@@ -1,0 +1,12 @@
+DimensionNodeManager
+    - store a set of previous types for each pos
+    - each tick check if there are any changes
+    - if there were changes create a nodeTypesChangedEvent for that block pos, with a set of new and a set of removed types,
+    - include level in event#
+    - this way formations do not need to check every tick, and can instead validate on change
+
+
+THere is a problem with unloading nodes. because i need access to the block state to "unload" the nodes
+
+so finishing that will have to wait for my type tracking system to finish, where I keep track of the types active in a block
+that way I can directly unload with 0 reference needed

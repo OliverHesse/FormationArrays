@@ -1,7 +1,7 @@
 package net.lucent.formation_arrays.capabilities;
 
 import net.lucent.formation_arrays.FormationArrays;
-import net.lucent.formation_arrays.api.v1.nodes.FormationNode;
+import net.lucent.formation_arrays.api.v2.nodes.FormationNode;
 import net.lucent.formation_arrays.common.util.ModTags;
 import net.lucent.formation_arrays.mixin.BlockCapabilityAccessor;
 import net.minecraft.resources.Identifier;

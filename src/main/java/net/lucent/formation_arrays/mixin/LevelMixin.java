@@ -30,12 +30,12 @@ public class LevelMixin {
             CallbackInfoReturnable<Boolean> cir
     ) {
         if(cir.getReturnValue() != true) return;
-        System.out.println("block in world was placed");
+
         Level self = (Level) (Object) this;
 
         if(SimpleNodeManager.getInstance() == null) return;
         if(self.isClientSide()) return; //TODO might change this later
-
+        /*
         SimpleNodeManager.getInstance().removeBlockNodeAt(
                 self,
                 pos
@@ -47,5 +47,7 @@ public class LevelMixin {
                 pos,
                 new FormationNodeProvider.BlockFormationNodeProvider(blockState.getBlock(),pos)
         );
+
+         */
     }
 }

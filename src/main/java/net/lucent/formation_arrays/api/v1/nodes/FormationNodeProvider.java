@@ -19,7 +19,7 @@ public sealed interface FormationNodeProvider permits
 
         @Override
         public FormationNode getNode(Level level) {
-            return entity.getCapability(CoreCapabilities.ENTITY_FORMATION_NODE);
+            return null;
         }
     }
 
@@ -27,7 +27,7 @@ public sealed interface FormationNodeProvider permits
         @Override
         public FormationNode getNode(Level level) {
 
-            return level.getCapability(CoreCapabilities.BLOCK_FORMATION_NODE,pos);
+            return null;
         }
     }
 

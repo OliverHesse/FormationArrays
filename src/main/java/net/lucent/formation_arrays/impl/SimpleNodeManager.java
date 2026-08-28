@@ -134,12 +134,5 @@ public class SimpleNodeManager implements NodeManager {
 
     }
 
-    @SubscribeEvent
-    private static void onChunkLoad(ChunkEvent.Load event){
 
-    }
-    @SubscribeEvent
-    private static void onChunkUnload(ChunkEvent.Unload event){
-
-    }
 }

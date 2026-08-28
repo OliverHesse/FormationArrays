@@ -3,6 +3,7 @@ package net.lucent.formation_arrays.api.v2.nodes.accessor;
 
 import net.lucent.formation_arrays.api.v2.nodes.FormationNode;
 import net.lucent.formation_arrays.api.v2.nodes.FormationNodeType;
+import net.lucent.formation_arrays.capabilities.CoreCapabilities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
@@ -23,7 +24,7 @@ public sealed interface FormationNodeHolder permits
 
             @Override
             public FormationNode getNode(Level level) {
-                return null;//TODO
+                return entity.getCapability(CoreCapabilities.ENTITY_FORMATION_NODE);
             }
 
             @Override
@@ -39,7 +40,7 @@ public sealed interface FormationNodeHolder permits
             @Override
             public FormationNode getNode(Level level) {
 
-                return null;//TODO
+                return level.getCapability(CoreCapabilities.BLOCK_FORMATION_NODE,pos);
             }
 
             @Override
