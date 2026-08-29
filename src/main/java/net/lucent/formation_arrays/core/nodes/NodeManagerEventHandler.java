@@ -1,4 +1,4 @@
-package net.lucent.formation_arrays.node_handling;
+package net.lucent.formation_arrays.core.nodes;
 
 import net.lucent.formation_arrays.FormationArrays;
 import net.lucent.formation_arrays.capabilities.CoreCapabilities;
@@ -14,7 +14,6 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.level.ChunkEvent;
-import net.neoforged.neoforge.event.level.ChunkTicketLevelUpdatedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import java.util.Collection;

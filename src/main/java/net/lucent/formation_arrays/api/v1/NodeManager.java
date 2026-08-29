@@ -1,4 +1,4 @@
-package net.lucent.formation_arrays.api;
+package net.lucent.formation_arrays.api.v1;
 
 import net.lucent.formation_arrays.api.v1.nodes.FormationNode;
 import net.lucent.formation_arrays.api.v1.nodes.FormationNodeProvider;

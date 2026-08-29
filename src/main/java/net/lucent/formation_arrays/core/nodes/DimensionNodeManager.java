@@ -1,9 +1,9 @@
-package net.lucent.formation_arrays.node_handling;
+package net.lucent.formation_arrays.core.nodes;
 
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.lucent.formation_arrays.FormationArrays;
-import net.lucent.formation_arrays.api.v2.nodes.FormationNodeProvider;
 import net.lucent.formation_arrays.api.v2.nodes.FormationNodeType;
+import net.lucent.formation_arrays.api.v2.nodes.NodeManager;
 import net.lucent.formation_arrays.api.v2.nodes.NodeState;
 import net.lucent.formation_arrays.api.v2.nodes.accessor.FormationNodeHolder;
 import net.lucent.formation_arrays.api.v2.nodes.accessor.FormationNodeReference;
@@ -11,21 +11,16 @@ import net.lucent.formation_arrays.api.v2.nodes.events.NodeTypesChangedEvent;
 import net.lucent.formation_arrays.capabilities.CoreCapabilities;
 import net.lucent.formation_arrays.util.BlockCapabilityUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.level.ChunkHolder;
-import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.*;
 
-public class DimensionNodeManager extends SavedData {
+public class DimensionNodeManager extends SavedData implements NodeManager {
 
     public static DimensionNodeManager getNodeManger(ServerLevel level){
         return level.getDataStorage().computeIfAbsent(STORAGE_ID);
@@ -74,12 +69,13 @@ public class DimensionNodeManager extends SavedData {
      * removes all nodes at a position, mainly used when a chunk is loaded
      * @param pos
      */
+    @Override
     public void clearNodesAt(BlockPos pos){
         if(!nodes.containsKey(pos)) return;
         nodes.get(pos).clear();
         setDirty();
     }
-
+    @Override
     public void unloadNodes(BlockPos pos){
         if(!nodes.containsKey(pos)) return;
         Set<FormationNodeReference> refSet = nodes.get(pos);
@@ -105,27 +101,42 @@ public class DimensionNodeManager extends SavedData {
 
 
     }
+    protected void addUnloadedNode(FormationNodeReference.Unloaded reference){
+        Set<FormationNodeReference> refSet = nodes.computeIfAbsent(reference.getPos(),key->new HashSet<>());
 
+        refSet.add(reference);
+
+        setDirty();
+    }
+
+    /**
+     * creates the initial unloaded states,
+     * does not initialize cache since the ticker will handle that and send out proper events
+     * @param states
+     */
     protected void createUnloadedStates(List<NodeState> states){
 
         for(NodeState state : states){
-            addNode(new FormationNodeReference.Unloaded(state.pos(),state.type()));
+            addUnloadedNode(new FormationNodeReference.Unloaded(state.pos(),state.type()));
         }
 
     }
+    @Override
     public void addNode(Entity entity){
         if(entity.getCapability(CoreCapabilities.ENTITY_FORMATION_NODE) == null) return;
         addNode(new FormationNodeReference.Loaded(new FormationNodeHolder.EntityFormationNodeHolder(entity)));
     }
+    @Override
     public void addNode(BlockPos pos){
         if(level.getCapability(CoreCapabilities.BLOCK_FORMATION_NODE,pos) == null) return;
 
         addNode(new FormationNodeReference.Loaded(new FormationNodeHolder.BlockFormationNodeHolder(pos)));
     }
+    @Override
     public void removeNode(Entity entity){
         //TODO
     }
-
+    @Override
     public void removeNode(BlockPos pos){
         FormationNodeReference reference = FormationNodeReference.of(pos);
         nodes.computeIfPresent(pos,(key,val)->{
@@ -135,17 +146,23 @@ public class DimensionNodeManager extends SavedData {
         setDirty();
 
     }
-
+    @Override
     public void updateNode(BlockPos pos){
         //check if node is still a valid node
         if(BlockCapabilityUtil.canBeNode(level.getBlockState(pos).getBlock())) addNode(pos);
         else removeNode(pos);
     }
+
+    @Override
+    public void updateNode(Entity entity) {
+
+    }
+    @Override
     public Collection<BlockPos> getAllNodeLocations(){
         return nodes.keySet();
     }
 
-
+    @Override
     public boolean hasNodeType(BlockPos pos, FormationNodeType type) {
         if(!nodes.containsKey(pos)) return false;
         for(FormationNodeReference ref:nodes.get(pos)){
@@ -154,7 +171,7 @@ public class DimensionNodeManager extends SavedData {
         return false;
     }
 
-
+    @Override
     public Set<FormationNodeType> getTypes(BlockPos pos) {
         if(!nodes.containsKey(pos)) return Set.of();
         Set<FormationNodeType> types = new HashSet<>();
@@ -163,6 +180,7 @@ public class DimensionNodeManager extends SavedData {
         };
         return types;
     }
+    @Override
     public boolean isLoaded(BlockPos pos){
         return level.isLoaded(pos);
     }

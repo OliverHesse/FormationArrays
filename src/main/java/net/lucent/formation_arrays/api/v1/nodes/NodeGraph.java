@@ -1,6 +1,6 @@
 package net.lucent.formation_arrays.api.v1.nodes;
 
-import net.lucent.formation_arrays.api.NodeManager;
+import net.lucent.formation_arrays.api.v1.NodeManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 

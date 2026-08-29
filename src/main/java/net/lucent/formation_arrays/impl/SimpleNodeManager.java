@@ -1,7 +1,7 @@
 package net.lucent.formation_arrays.impl;
 
 import net.lucent.formation_arrays.FormationArrays;
-import net.lucent.formation_arrays.api.NodeManager;
+import net.lucent.formation_arrays.api.v1.NodeManager;
 import net.lucent.formation_arrays.api.v1.nodes.FormationNode;
 import net.lucent.formation_arrays.api.v1.nodes.FormationNodeProvider;
 import net.minecraft.core.BlockPos;
@@ -11,7 +11,6 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.level.BlockEvent;
-import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 
 import java.util.*;
