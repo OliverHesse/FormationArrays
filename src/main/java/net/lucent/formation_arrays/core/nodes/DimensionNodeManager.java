@@ -2,11 +2,13 @@ package net.lucent.formation_arrays.core.nodes;
 
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.lucent.formation_arrays.FormationArrays;
+import net.lucent.formation_arrays.api.v2.nodes.FormationNode;
 import net.lucent.formation_arrays.api.v2.nodes.FormationNodeType;
+import net.lucent.formation_arrays.api.v2.nodes.Node;
 import net.lucent.formation_arrays.api.v2.nodes.NodeManager;
-import net.lucent.formation_arrays.api.v2.nodes.NodeState;
 import net.lucent.formation_arrays.api.v2.nodes.accessor.FormationNodeHolder;
 import net.lucent.formation_arrays.api.v2.nodes.accessor.FormationNodeReference;
+import net.lucent.formation_arrays.api.v2.nodes.events.NodeStateChangeEvent;
 import net.lucent.formation_arrays.api.v2.nodes.events.NodeTypesChangedEvent;
 import net.lucent.formation_arrays.capabilities.CoreCapabilities;
 import net.lucent.formation_arrays.util.BlockCapabilityUtil;
@@ -33,7 +35,7 @@ public class DimensionNodeManager extends SavedData implements NodeManager {
             level->
             RecordCodecBuilder.create(instance -> instance.group(
                     RecordCodecBuilder.point(level),
-                    NodeState.CODEC.listOf().fieldOf("nodes").forGetter(DimensionNodeManager::getNodeStates)
+                    Node.CODEC.listOf().fieldOf("nodes").forGetter(DimensionNodeManager::getNodeStates)
             ).apply(instance, DimensionNodeManager::new))
     );
 
@@ -48,42 +50,49 @@ public class DimensionNodeManager extends SavedData implements NodeManager {
         this.level = level;
     }
 
-    public DimensionNodeManager(ServerLevel level,List<NodeState> savedStates) {
+    public DimensionNodeManager(ServerLevel level,List<Node> savedStates) {
         this(level);
         createUnloadedStates(savedStates);
     }
 
-    public List<NodeState> getNodeStates() {
-        Set<NodeState> uniqueStates = new HashSet<>();
-
-        for(Set<FormationNodeReference> refSet : nodes.values()){
+    public List<Node> getNodeStates() {
+        List<Node> groupedNodes = new ArrayList<>();
+        for(BlockPos pos : nodes.keySet()){
+            Set<FormationNodeReference> refSet  = nodes.get(pos);
+            Set<FormationNodeType> types = new HashSet<>();
             for(FormationNodeReference ref :refSet){
-                for(FormationNodeType type : ref.getNodeTypes(level)) uniqueStates.add(new NodeState(type,ref.getPos()));
+                types.addAll(ref.getNodeTypes(level));
             }
+            groupedNodes.add(new Node(pos,types.stream().toList()));
         }
-        System.out.println("saving states ("+uniqueStates.size()+")");
-        return List.copyOf(uniqueStates);
+        return groupedNodes;
+
     }
 
+    public void triggerLoadStateChange(BlockPos pos){
+        NeoForge.EVENT_BUS.post(new NodeStateChangeEvent.Load(level,pos));
+    }
+    public void triggerUnloadStateChange(BlockPos pos){
+        NeoForge.EVENT_BUS.post(new NodeStateChangeEvent.Unload(level,pos));
+    }
     /**
      * removes all nodes at a position, mainly used when a chunk is loaded
      * @param pos
      */
     @Override
-    public void clearNodesAt(BlockPos pos){
+    public void loadNodes(BlockPos pos){
         if(!nodes.containsKey(pos)) return;
         nodes.get(pos).clear();
         setDirty();
+        triggerLoadStateChange(pos);
     }
     @Override
     public void unloadNodes(BlockPos pos){
         if(!nodes.containsKey(pos)) return;
         Set<FormationNodeReference> refSet = nodes.get(pos);
         refSet.clear();
-
-        for(FormationNodeType type : cachedTypes.getOrDefault(pos,Set.of())){
-            refSet.add(new FormationNodeReference.Unloaded(pos,type));
-        }
+        refSet.add(new FormationNodeReference.Unloaded(pos,List.copyOf(cachedTypes.getOrDefault(pos,Set.of()))));
+        triggerUnloadStateChange(pos);
     }
     /**
      * ensures no nodes are held as unloaded, then adds the new node.
@@ -91,7 +100,7 @@ public class DimensionNodeManager extends SavedData implements NodeManager {
      * @param reference the node reference we want to add
      */
     public void addNode(FormationNodeReference reference){
-        if(!isLoaded(reference.getPos())) clearNodesAt(reference.getPos());
+        if(!isLoaded(reference.getPos())) loadNodes(reference.getPos());
 
         Set<FormationNodeReference> refSet = nodes.computeIfAbsent(reference.getPos(),key->new HashSet<>());
 
@@ -114,10 +123,10 @@ public class DimensionNodeManager extends SavedData implements NodeManager {
      * does not initialize cache since the ticker will handle that and send out proper events
      * @param states
      */
-    protected void createUnloadedStates(List<NodeState> states){
+    protected void createUnloadedStates(List<Node> states){
 
-        for(NodeState state : states){
-            addUnloadedNode(new FormationNodeReference.Unloaded(state.pos(),state.type()));
+        for(Node state : states){
+            addUnloadedNode(new FormationNodeReference.Unloaded(state.pos(),state.types()));
         }
 
     }

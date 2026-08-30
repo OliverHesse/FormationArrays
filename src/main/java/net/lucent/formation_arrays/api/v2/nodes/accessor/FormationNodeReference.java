@@ -62,7 +62,7 @@ public interface FormationNodeReference {
 
 
     }
-    record Unloaded(BlockPos pos, FormationNodeType type) implements FormationNodeReference{
+    record Unloaded(BlockPos pos, List<FormationNodeType> types) implements FormationNodeReference{
 
         @Override
         public boolean isLoaded() {
@@ -86,12 +86,12 @@ public interface FormationNodeReference {
 
         @Override
         public Collection<FormationNodeType> getNodeTypes(Level level) {
-            return List.of(type);
+            return types;
         }
 
         @Override
         public boolean isType(FormationNodeType type, Level level) {
-            return type == this.type;
+            return types.contains(type);
         }
 
     }

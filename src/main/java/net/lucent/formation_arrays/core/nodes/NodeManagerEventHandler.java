@@ -42,7 +42,7 @@ public class NodeManagerEventHandler {
             if(chunkPos.contains(pos)) {
                 System.out.println("clearing unloaded nodes");
                 System.out.println(chunkPos);
-                nodeManager.clearNodesAt(pos);
+                nodeManager.loadNodes(pos);
             };
         }
 

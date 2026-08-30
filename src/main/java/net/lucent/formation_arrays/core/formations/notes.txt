@@ -1,0 +1,15 @@
+Formation Manager
+    - store all formations
+    - store a map of block pos -> listeners
+    - listen to unload/load, whenever a node is unloaded query all formations listening
+      the query would be something like shouldUnload, in this scenario the formation would check
+      if all required nodes are unloaded it would return false and then be deactivated
+    - will need to use some tricks to write and read (what i did before) but I have access to server Level now so is a bit easier
+      basically each codec actually stores raw Value input/output, then decode them on the spot
+    - every time a node type is changed, we do a valid check, if false we destroy it
+    - for unload/load, we just inform the statehandelr that it happened, and the the rest is implementaiton specific
+      so for my implementation(as an example) instance manager would hold the previous active state of the handler
+      if it changes after a tick, we either activate or deactivate it
+
+Formation Activation
+    - create a global handler that provides a node type -> formations

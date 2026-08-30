@@ -5,7 +5,8 @@ DimensionNodeManager
     - include level in event#
     - this way formations do not need to check every tick, and can instead validate on change
     - add a "cache" for entity nodes -> last position, so when trying to remove/update we dont accidentally leave any
-
+    - add an event for when nodes are unloaded/loaded ?
+    - clear nodes should be replaced with loadNode
 THere is a problem with unloading nodes. because i need access to the block state to "unload" the nodes
 
 so finishing that will have to wait for my type tracking system to finish, where I keep track of the types active in a block
