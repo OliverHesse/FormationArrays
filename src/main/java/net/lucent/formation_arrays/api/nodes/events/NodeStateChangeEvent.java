@@ -1,4 +1,4 @@
-package net.lucent.formation_arrays.api.v2.nodes.events;
+package net.lucent.formation_arrays.api.nodes.events;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;

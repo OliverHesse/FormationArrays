@@ -1,6 +1,4 @@
-package net.lucent.formation_arrays.api.v2.nodes;
-
-import net.minecraft.world.level.Level;
+package net.lucent.formation_arrays.api.nodes;
 
 import java.util.Collection;
 

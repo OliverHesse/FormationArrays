@@ -1,4 +1,4 @@
-package net.lucent.formation_arrays.api.v2.nodes;
+package net.lucent.formation_arrays.api.nodes;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

@@ -1,15 +1,12 @@
-package net.lucent.formation_arrays.api.v2.nodes.accessor;
+package net.lucent.formation_arrays.api.nodes.accessor;
 
 
-import net.lucent.formation_arrays.api.v2.nodes.FormationNode;
-import net.lucent.formation_arrays.api.v2.nodes.FormationNodeType;
+import net.lucent.formation_arrays.api.nodes.FormationNode;
 import net.lucent.formation_arrays.capabilities.CoreCapabilities;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.status.ChunkStatus;

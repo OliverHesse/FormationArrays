@@ -1,13 +1,10 @@
 package net.lucent.formation_arrays.core.formations.state_handled;
 
-import net.lucent.formation_arrays.api.v2.CoreRegistries;
-import net.lucent.formation_arrays.api.v2.formations.Formation;
-import net.lucent.formation_arrays.api.v2.formations.FormationInstance;
-import net.lucent.formation_arrays.api.v2.formations.FormationRuntimeData;
-import net.lucent.formation_arrays.api.v2.nodes.NodeManager;
+import net.lucent.formation_arrays.api.formations.Formation;
+import net.lucent.formation_arrays.api.formations.FormationInstance;
+import net.lucent.formation_arrays.api.formations.FormationRuntimeData;
+import net.lucent.formation_arrays.api.nodes.NodeManager;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 
 import java.util.Set;

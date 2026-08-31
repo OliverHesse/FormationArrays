@@ -2,12 +2,12 @@ package net.lucent.formation_arrays.core.formations;
 
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.lucent.formation_arrays.FormationArrays;
-import net.lucent.formation_arrays.api.v2.formations.Formation;
-import net.lucent.formation_arrays.api.v2.formations.FormationInstance;
-import net.lucent.formation_arrays.api.v2.nodes.FormationNodeType;
-import net.lucent.formation_arrays.api.v2.nodes.Node;
-import net.lucent.formation_arrays.api.v2.nodes.NodeManager;
-import net.lucent.formation_arrays.api.v2.nodes.events.NodeTypesChangedEvent;
+import net.lucent.formation_arrays.api.formations.Formation;
+import net.lucent.formation_arrays.api.formations.FormationInstance;
+import net.lucent.formation_arrays.api.nodes.FormationNodeType;
+import net.lucent.formation_arrays.api.nodes.NodeManager;
+import net.lucent.formation_arrays.api.nodes.events.NodeTypesChangedEvent;
+import net.lucent.formation_arrays.core.formations.activation.FormationActivationHelper;
 import net.lucent.formation_arrays.core.nodes.DimensionNodeManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
@@ -103,6 +103,9 @@ public class DimensionFormationManager extends SavedData {
             if(!instance.isValid(level,manager)) destroyedFormations.add(instance);
         }
 
+        for(FormationNodeType newType : event.getAdded()){
+            FormationActivationHelper.getFormations(newType).forEach(formation -> tryCreateFormation(manager,formation,event.getPos(),newType));
+        }
     }
     public void nodeLoaded(BlockPos pos){
         Collection<FormationInstance> triggeredListeners = listeners.getOrDefault(pos,Set.of());

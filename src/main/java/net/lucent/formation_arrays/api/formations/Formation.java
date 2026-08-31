@@ -1,10 +1,8 @@
-package net.lucent.formation_arrays.api.v2.formations;
+package net.lucent.formation_arrays.api.formations;
 
-import net.lucent.formation_arrays.api.v2.nodes.FormationNodeType;
-import net.lucent.formation_arrays.api.v2.nodes.NodeManager;
-import net.lucent.formation_arrays.core.formations.state_handled.FormationStateHandler;
+import net.lucent.formation_arrays.api.nodes.FormationNodeType;
+import net.lucent.formation_arrays.api.nodes.NodeManager;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -17,7 +15,7 @@ public interface Formation<T extends FormationRuntimeData,S extends FormationIns
     /**
      * returns a set of node types required to activate
      */
-    Set<FormationType> activationNodes();
+    Set<FormationNodeType> activationNodes();
 
     /**
      * when an activation node type is detected, tests to see if we can activate the formation

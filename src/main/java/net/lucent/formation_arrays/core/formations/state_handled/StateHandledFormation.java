@@ -1,8 +1,7 @@
 package net.lucent.formation_arrays.core.formations.state_handled;
 
-import net.lucent.formation_arrays.api.v2.formations.Formation;
-import net.lucent.formation_arrays.api.v2.formations.FormationInstance;
-import net.lucent.formation_arrays.api.v2.formations.FormationRuntimeData;
+import net.lucent.formation_arrays.api.formations.Formation;
+import net.lucent.formation_arrays.api.formations.FormationRuntimeData;
 import net.minecraft.world.level.Level;
 
 public interface StateHandledFormation<T extends FormationRuntimeData,S extends FormationStateHandler> extends Formation<T,StateHandledFormationInstance<T,S>> {

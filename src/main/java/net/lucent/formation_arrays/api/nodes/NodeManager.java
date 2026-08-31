@@ -1,4 +1,4 @@
-package net.lucent.formation_arrays.api.v2.nodes;
+package net.lucent.formation_arrays.api.nodes;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;

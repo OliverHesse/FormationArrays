@@ -1,6 +1,5 @@
 package net.lucent.formation_arrays;
 
-import net.lucent.formation_arrays.api.v1.nodes.FormationNode;
 import net.lucent.formation_arrays.capabilities.CoreCapabilities;
 import net.lucent.formation_arrays.mixin.BlockCapabilityAccessor;
 import net.lucent.formation_arrays.util.BlockCapabilityUtil;

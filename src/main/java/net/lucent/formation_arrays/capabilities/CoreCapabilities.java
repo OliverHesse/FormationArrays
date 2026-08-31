@@ -1,20 +1,15 @@
 package net.lucent.formation_arrays.capabilities;
 
 import net.lucent.formation_arrays.FormationArrays;
-import net.lucent.formation_arrays.api.v2.nodes.FormationNode;
+import net.lucent.formation_arrays.api.nodes.FormationNode;
 import net.lucent.formation_arrays.common.util.ModTags;
-import net.lucent.formation_arrays.mixin.BlockCapabilityAccessor;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.EntityCapability;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-
-import java.util.Collection;
 
 @EventBusSubscriber(modid = FormationArrays.MOD_ID)
 public class CoreCapabilities {

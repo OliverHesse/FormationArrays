@@ -1,8 +1,9 @@
 package net.lucent.formation_arrays.capabilities;
 
 
-import net.lucent.formation_arrays.api.v2.nodes.FormationNode;
-import net.lucent.formation_arrays.api.v2.nodes.FormationNodeType;
+
+import net.lucent.formation_arrays.api.nodes.FormationNode;
+import net.lucent.formation_arrays.api.nodes.FormationNodeType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
