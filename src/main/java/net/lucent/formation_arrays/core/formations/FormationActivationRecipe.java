@@ -18,19 +18,20 @@ public record FormationActivationRecipe(List<Node> nodes, boolean canRotate){
      * when an activation node type is detected, tests to see if we can activate the formation
      * @param nodeManager the mangar handling nodes
      * @param pos the position of the node
-     * @param type the type we detected being added
      * @return true -> create a formation, false -> do not create a formation
      */
-    public boolean tryActive(NodeManager nodeManager, BlockPos pos, FormationNodeType type){
+    public boolean tryActive(NodeManager nodeManager, BlockPos pos){
         //TODO
         return false;
     }
 
     /**
      * from a given node, returns the global position of each node with the index of the pos -> node in node list
+     * @param nodeManager the node manager used
+     * @param pos the position of the node
      * @return the global position of each node
      */
-    public List<BlockPos> getGlobalNodes(NodeManager nodeManager, BlockPos pos, FormationNodeType type){
+    public List<BlockPos> getGlobalNodes(NodeManager nodeManager, BlockPos pos){
 
         return List.of();
     }

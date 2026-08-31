@@ -25,19 +25,30 @@ public class StateHandledFormationInstance<T extends FormationRuntimeData,S exte
     }
 
     @Override
-    public void tick(Level level){
+    public void tick(Level level,NodeManager manager){
         if(wasActiveLastTick && !handler.isActive(level)){
             //TODO deactivate
         }else if(!wasActiveLastTick && handler.isActive(level)){
             //TODO activate
         }
+
         wasActiveLastTick = handler.isActive(level);
         formation.tick(runtimeData,handler,level);
     }
 
     @Override
-    public void destroy(Level level) {
+    public void created(Level level, NodeManager manager) {
+
+    }
+
+    @Override
+    public void destroyed(Level level,NodeManager manager) {
         formation.destroy(runtimeData,handler,level);
+    }
+
+    @Override
+    public Formation<?, ?> getFormation() {
+        return formation;
     }
 
     @Override
@@ -65,8 +76,5 @@ public class StateHandledFormationInstance<T extends FormationRuntimeData,S exte
         return handler.isValid(level);
     }
 
-    //important!! since this is saved so we can retrieve the proper instance
-    public Identifier getFormationId(RegistryAccess access){
-        return CoreRegistries.FORMATIONS.get(access).getKey(formation);
-    }
+
 }

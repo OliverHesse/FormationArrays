@@ -19,4 +19,20 @@ public class NodeTypesChangedEvent extends Event {
         this.added = added;
         this.removed = removed;
     }
+
+    public ServerLevel getLevel() {
+        return level;
+    }
+
+    public BlockPos getPos() {
+        return pos;
+    }
+
+    public Set<FormationNodeType> getAdded() {
+        return added;
+    }
+
+    public Set<FormationNodeType> getRemoved() {
+        return removed;
+    }
 }

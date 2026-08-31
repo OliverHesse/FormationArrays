@@ -10,11 +10,16 @@ import java.util.Set;
  * Interfaces for the formation manager to "handle" the formation, should hold
  * the runtime data and state handler, but because the manager never directly interfaces with those
  * we do not need them as generics, since
- *
  */
 public interface FormationInstance{
-    void tick(Level level);
-    void destroy(Level level);
+    void tick(Level level,NodeManager manager);
+
+    //tells the instance it has officially been created
+    void created(Level level,NodeManager manager);
+    //tells the instance it has officially been destroyed
+    void destroyed(Level level,NodeManager manager);
+
+    Formation<?,?> getFormation();
 
     //all the positions the formations wants updates for
     Set<BlockPos> getListenedNodePositions();

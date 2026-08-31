@@ -14,7 +14,9 @@ public interface Formation<T extends FormationRuntimeData,S extends FormationIns
 
     FormationType getType();
 
-    //returns a set of node types required to activate
+    /**
+     * returns a set of node types required to activate
+     */
     Set<FormationType> activationNodes();
 
     /**
@@ -25,6 +27,18 @@ public interface Formation<T extends FormationRuntimeData,S extends FormationIns
      * @return true -> create a formation, false -> do not create a formation
      */
     boolean tryActive(NodeManager nodeManager, BlockPos pos, FormationNodeType type);
+
+    /**
+     * given an activation node, return the set of positions of all required nodes, this will be used
+     * to uniquely identify a formation, and ensure a duplicate formation is not created
+     * (NOTE: in its current implementation it does not check for type of the nodes, so if a formation supports orientation
+     * it will still trigger as a duplicate)
+     * @param nodeManager the mangar handling nodes
+     * @param pos the position of the node
+     * @param type the type we detected being added
+     * @return a set of required activation node positions
+     */
+    Set<BlockPos> getRequiredActivationNodes(NodeManager nodeManager, BlockPos pos, FormationNodeType type);
 
     /**
      * Creates a fresh instance from a given node and node type

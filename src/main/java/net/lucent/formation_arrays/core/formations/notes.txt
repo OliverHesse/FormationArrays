@@ -13,3 +13,6 @@ Formation Manager
 
 Formation Activation
     - create a global handler that provides a node type -> formations
+    - set up a system, such that when a formation is activated, a set of required node positions is held somewhere
+      this way we can avoid double creations by checking if that formation already exists for that set of nodes
+      (for example an activation node might be a control node, and when replaced would activate it and trigger the creation again)
