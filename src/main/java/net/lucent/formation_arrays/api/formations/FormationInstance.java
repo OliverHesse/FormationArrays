@@ -3,7 +3,9 @@ package net.lucent.formation_arrays.api.formations;
 import net.lucent.formation_arrays.api.nodes.FormationNodeType;
 import net.lucent.formation_arrays.api.nodes.NodeManager;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import java.util.Set;
 
@@ -22,8 +24,9 @@ public interface FormationInstance{
 
     Formation<?,?> getFormation();
 
+
     //all the positions the formations wants updates for
-    Set<BlockPos> getListenedNodePositions(NodeManager manager, BlockPos pos, FormationNodeType type);
+    Set<BlockPos> getListenedNodePositions();
 
 
     //tells the formation to update its state for this pos
@@ -43,5 +46,5 @@ public interface FormationInstance{
      */
     boolean isValid(Level level,NodeManager nodeManager);
 
-
+    void write(ValueOutput output, RegistryAccess access);
 }

@@ -3,6 +3,7 @@ package net.lucent.formation_arrays.api.formations;
 import net.lucent.formation_arrays.api.nodes.FormationNodeType;
 import net.lucent.formation_arrays.api.nodes.NodeManager;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -47,11 +48,11 @@ public interface Formation<T extends FormationRuntimeData,S extends FormationIns
      */
     S createFormationInstance(NodeManager nodeManager, BlockPos pos, FormationNodeType type);
     S loadFormationInstance(ValueInput input);
-    void writeFormationInstance(ValueOutput output,S instance);
+    void writeFormationInstance(ValueOutput output, S instance, RegistryAccess access);
 
     T createRuntimeData();
     T loadRuntimeData(ValueInput input);
-    void writeRuntimeData(ValueOutput output,T runtimeData);
+    void writeRuntimeData(ValueOutput output,T runtimeData, RegistryAccess access);
 
 
 }

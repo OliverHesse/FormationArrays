@@ -6,14 +6,16 @@ import net.lucent.formation_arrays.api.formations.FormationRuntimeData;
 import net.lucent.formation_arrays.api.nodes.FormationNodeType;
 import net.lucent.formation_arrays.api.nodes.NodeManager;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import java.util.Set;
 
 public class StateHandledFormationInstance<T extends FormationRuntimeData,S extends FormationStateHandler> implements FormationInstance {
     private final StateHandledFormation<T,S> formation;
-    private final T runtimeData;
-    private final S handler;
+    public final T runtimeData;
+    public final S handler;
     private boolean wasActiveLastTick = false;
 
     public StateHandledFormationInstance(StateHandledFormation<T, S> formation, T runtimeData, S handler) {
@@ -52,9 +54,10 @@ public class StateHandledFormationInstance<T extends FormationRuntimeData,S exte
         return formation;
     }
 
+
     @Override
-    public Set<BlockPos> getListenedNodePositions(NodeManager manager, BlockPos pos, FormationNodeType type) {
-        return formation.getRequiredActivationNodes(manager,pos,type);
+    public Set<BlockPos> getListenedNodePositions() {
+        return handler.getListenedNodePositions();
     }
 
     @Override
@@ -75,6 +78,11 @@ public class StateHandledFormationInstance<T extends FormationRuntimeData,S exte
     @Override
     public boolean isValid(Level level, NodeManager nodeManager) {
         return handler.isValid(level,nodeManager);
+    }
+
+    @Override
+    public void write(ValueOutput output, RegistryAccess access) {
+        formation.writeFormationInstance(output,this,access);
     }
 
 

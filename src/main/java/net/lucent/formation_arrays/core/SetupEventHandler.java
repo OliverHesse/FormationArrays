@@ -4,6 +4,7 @@ import net.lucent.formation_arrays.FormationArrays;
 import net.lucent.formation_arrays.core.formations.DimensionFormationManager;
 import net.lucent.formation_arrays.core.formations.activation.FormationActivationHelper;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.level.LevelEvent;
@@ -25,5 +26,6 @@ public class SetupEventHandler {
     private static void onLevelLoad(LevelEvent.Load event){
         if(!(event.getLevel() instanceof ServerLevel serverLevel)) return;
         DimensionFormationManager.getFormationManager(serverLevel).init();
+
     }
 }
