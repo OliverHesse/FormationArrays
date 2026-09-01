@@ -27,9 +27,15 @@ public class FormationBlockTagProvider extends BlockTagsProvider {
 
 
         tag(ModTags.Blocks.FORMATION_NODE)
-                .addTag(ModTags.Blocks.MAGIC_NODE);
+                .addTag(ModTags.Blocks.MAGIC_NODE)
+                .addTag(ModTags.Blocks.DIAMOND_NODE)
+                .addTag(ModTags.Blocks.GOLD_NODE)
+                .addTag(ModTags.Blocks.IRON_NODE);
 
         tag(ModTags.Blocks.MAGIC_NODE)
                 .add(BuiltInRegistries.BLOCK.getResourceKey(Blocks.DRAGON_EGG).get());
+        tag(ModTags.Blocks.DIAMOND_NODE).add(BuiltInRegistries.BLOCK.getResourceKey(Blocks.DIAMOND_BLOCK).get());
+        tag(ModTags.Blocks.GOLD_NODE).add(BuiltInRegistries.BLOCK.getResourceKey(Blocks.GOLD_BLOCK).get());
+        tag(ModTags.Blocks.IRON_NODE).add(BuiltInRegistries.BLOCK.getResourceKey(Blocks.IRON_BLOCK).get());
     }
 }

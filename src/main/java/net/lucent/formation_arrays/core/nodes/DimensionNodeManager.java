@@ -170,9 +170,14 @@ public class DimensionNodeManager extends SavedData implements NodeManager {
         return nodes.keySet();
     }
 
+    /*
+
+        return cachedTypes.containsKey(pos) ? cachedTypes.get(pos).contains(type) : false;
+     */
     @Override
     public boolean hasNodeType(BlockPos pos, FormationNodeType type) {
         if(!nodes.containsKey(pos)) return false;
+
         for(FormationNodeReference ref:nodes.get(pos)){
             if(ref.isType(type,level)) return true;
         }

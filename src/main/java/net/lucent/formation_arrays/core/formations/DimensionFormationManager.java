@@ -24,7 +24,7 @@ public class DimensionFormationManager extends SavedData {
     //TODO set it up so we store raw ValueInput/Output then we can decode it in constructor
     public static final SavedDataType<DimensionFormationManager> STORAGE_ID = new SavedDataType<>(
 
-            Identifier.fromNamespaceAndPath(FormationArrays.MOD_ID, "formation_nodes"),
+            Identifier.fromNamespaceAndPath(FormationArrays.MOD_ID, "formations"),
             DimensionFormationManager::new,
             level->
                     RecordCodecBuilder.create(instance -> instance.group(
@@ -38,9 +38,17 @@ public class DimensionFormationManager extends SavedData {
 
     public record PlacedFormation(Set<BlockPos> nodes, FormationInstance instance){
 
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null || getClass() != o.getClass()) return false;
+            PlacedFormation that = (PlacedFormation) o;
+            return Objects.equals(nodes, that.nodes) && Objects.equals(instance.getFormation().getClass(), that.instance.getFormation().getClass());
+        }
+
         @Override
         public int hashCode() {
-            return Objects.hash(nodes,instance.getFormation().getClass());
+            return Objects.hash(nodes, instance.getFormation().getClass());
         }
     }
 
@@ -50,24 +58,31 @@ public class DimensionFormationManager extends SavedData {
 
     private final Set<FormationInstance> formations = new HashSet<>();
     private final Set<FormationInstance> destroyedFormations = new HashSet<>();
+
     public Map<BlockPos,Set<FormationInstance>> listeners = new HashMap<>();
+    public Map<FormationInstance,Set<BlockPos>> listenedPositions = new HashMap<>();
 
     private final ServerLevel level;
 
 
     public void tryCreateFormation(NodeManager nodeManager, Formation<?,?> formation, BlockPos pos, FormationNodeType type){
+        System.out.println("trying to create formation");
         if(!formation.tryActive(nodeManager,pos,type)) return;
+        System.out.println("nodes valid");
         FormationInstance instance = formation.createFormationInstance(nodeManager,pos,type);
 
         PlacedFormation placedFormation = new PlacedFormation(formation.getRequiredActivationNodes(nodeManager,pos,type),instance);
 
+        //TODO for some reason this check is not working
         if(!placedFormations.add(placedFormation)) return;
         instanceToPlacement.put(instance,placedFormation);
 
-        Collection<BlockPos> listenedPos = instance.getListenedNodePositions();
+        Set<BlockPos> listenedPos = instance.getListenedNodePositions(nodeManager,pos,type);
 
         listenedPos.forEach(listenerPos->listeners.computeIfAbsent(listenerPos,key->new HashSet<>()).add(instance));
+
         formations.add(instance);
+        listenedPositions.put(instance,listenedPos);
 
 
     }
@@ -79,9 +94,8 @@ public class DimensionFormationManager extends SavedData {
     public void removeFormation(FormationInstance instance){
         PlacedFormation placedFormation = instanceToPlacement.remove(instance);
         if(placedFormation == null) return;
-
         placedFormations.remove(placedFormation);
-        Collection<BlockPos> listenedPos = instance.getListenedNodePositions();
+        Set<BlockPos> listenedPos = listenedPositions.remove(instance);
         listenedPos.forEach(listenerPos->listeners.computeIfPresent(listenerPos,(key,val)->{
             val.remove(instance);
             return val.isEmpty() ? null : val;
@@ -104,6 +118,7 @@ public class DimensionFormationManager extends SavedData {
         }
 
         for(FormationNodeType newType : event.getAdded()){
+            System.out.println("checking formations ("+FormationActivationHelper.getFormations(newType).size()+") for type "+newType.type());
             FormationActivationHelper.getFormations(newType).forEach(formation -> tryCreateFormation(manager,formation,event.getPos(),newType));
         }
     }
@@ -121,6 +136,8 @@ public class DimensionFormationManager extends SavedData {
 
     /**
      * Run on Level load after node manager is loaded, used to ensure all loaded formations are valid and any other setup
+     *
+     * TODO also run checks to see if any new formations can be created
      */
     public void init(){
         NodeManager manager = DimensionNodeManager.getNodeManger(level);

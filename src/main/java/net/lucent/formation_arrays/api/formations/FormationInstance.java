@@ -1,5 +1,6 @@
 package net.lucent.formation_arrays.api.formations;
 
+import net.lucent.formation_arrays.api.nodes.FormationNodeType;
 import net.lucent.formation_arrays.api.nodes.NodeManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -22,7 +23,7 @@ public interface FormationInstance{
     Formation<?,?> getFormation();
 
     //all the positions the formations wants updates for
-    Set<BlockPos> getListenedNodePositions();
+    Set<BlockPos> getListenedNodePositions(NodeManager manager, BlockPos pos, FormationNodeType type);
 
 
     //tells the formation to update its state for this pos

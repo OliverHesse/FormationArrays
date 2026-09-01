@@ -2,6 +2,7 @@ package net.lucent.formation_arrays;
 
 import net.lucent.formation_arrays.capabilities.CoreCapabilities;
 import net.lucent.formation_arrays.mixin.BlockCapabilityAccessor;
+import net.lucent.formation_arrays.test.TestRegistries;
 import net.lucent.formation_arrays.util.BlockCapabilityUtil;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityEvent;
@@ -58,6 +59,7 @@ public class FormationArrays {
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        TestRegistries.register(modEventBus);
     }
 
     @SubscribeEvent

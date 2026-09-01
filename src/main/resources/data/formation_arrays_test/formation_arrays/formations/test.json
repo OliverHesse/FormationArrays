@@ -1,0 +1,25 @@
+{
+  "type": "formation_arrays:debug",
+  "activation_nodes": {
+    "nodes": [
+      {
+        "pos" : [2,0,0],
+        "types": ["formation_arrays:magic_node"]
+      },
+      {
+        "pos" : [0,0,2],
+        "types":[ "formation_arrays:diamond_node"]
+      },
+      {
+        "pos" : [0,0,-2],
+        "types": ["formation_arrays:gold_node"]
+      },
+      {
+        "pos" : [-2,0,0],
+        "types": ["formation_arrays:iron_node"]
+      }
+    ],
+    "can_rotate": false
+  },
+  "control_node": [-2,0,0]
+}

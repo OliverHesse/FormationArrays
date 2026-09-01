@@ -7,7 +7,14 @@ DimensionNodeManager
     - add a "cache" for entity nodes -> last position, so when trying to remove/update we dont accidentally leave any
     - add an event for when nodes are unloaded/loaded ?
     - clear nodes should be replaced with loadNode
+
 THere is a problem with unloading nodes. because i need access to the block state to "unload" the nodes
 
 so finishing that will have to wait for my type tracking system to finish, where I keep track of the types active in a block
 that way I can directly unload with 0 reference needed
+
+
+
+Node Types(TODO)
+as a default create a node type capability that pulls from a datamap attached to blocks
+this would be applied to ALL blocks and only is created if they do have a datamap

@@ -49,8 +49,8 @@ public interface Formation<T extends FormationRuntimeData,S extends FormationIns
     S loadFormationInstance(ValueInput input);
     void writeFormationInstance(ValueOutput output,S instance);
 
-    FormationRuntimeData createRuntimeData();
-    FormationRuntimeData loadRuntimeData(ValueInput input);
+    T createRuntimeData();
+    T loadRuntimeData(ValueInput input);
     void writeRuntimeData(ValueOutput output,T runtimeData);
 
 

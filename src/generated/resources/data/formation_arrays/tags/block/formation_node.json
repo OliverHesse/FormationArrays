@@ -1,5 +1,8 @@
 {
   "values": [
-    "#formation_arrays:formation_node/magic_node"
+    "#formation_arrays:formation_node/magic_node",
+    "#formation_arrays:formation_node/diamond_node",
+    "#formation_arrays:formation_node/gold_node",
+    "#formation_arrays:formation_node/iron_node"
   ]
 }

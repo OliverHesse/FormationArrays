@@ -1,9 +1,11 @@
 package net.lucent.formation_arrays.core.formations.state_handled;
 
+import net.lucent.formation_arrays.api.nodes.NodeManager;
 import net.minecraft.world.level.Level;
 
-public abstract class FormationStateHandler {
+import java.util.List;
 
-    public abstract boolean isActive(Level level);
-    public abstract boolean isValid(Level level);
+public interface FormationStateHandler {
+    boolean isActive(Level level, NodeManager nodeManager);
+    boolean isValid(Level level, NodeManager nodeManager);
 }

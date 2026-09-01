@@ -5,7 +5,7 @@ import com.mojang.serialization.MapCodec;
 import net.lucent.formation_arrays.api.CoreRegistries;
 
 public abstract class FormationType{
-    public abstract MapCodec<Formation<?,?>> definitionCodec();
+    public abstract MapCodec<? extends Formation<?,?>> definitionCodec();
 
     public static final Codec<Formation<?,?>> FORMATIONS = CoreRegistries.FORMATION_TYPES.byNameCodec()
             .dispatch(

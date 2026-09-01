@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.*;
-
+//TODO replace with datamap variant? we can modify later to add more features(e.g a conditional type, that checks something then returns a result)
 public class BlockTagFormationNode implements FormationNode {
     private final Set<FormationNodeType> types;
     public BlockTagFormationNode(Level level, BlockPos pos, BlockState state, BlockEntity entity){

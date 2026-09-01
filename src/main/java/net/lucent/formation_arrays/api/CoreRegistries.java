@@ -5,13 +5,14 @@ import net.lucent.formation_arrays.api.formations.FormationType;
 import net.lucent.formation_arrays.api.formations.Formation;
 import net.minecraft.core.Registry;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.zic.zenithlib.registry.RegistryHelper;
-
+@EventBusSubscriber(modid = FormationArrays.MOD_ID)
 public class CoreRegistries {
 
-    public static final Registry<FormationType> FORMATION_TYPES = RegistryHelper.registry(FormationArrays.MOD_ID,"formations");
+    public static final Registry<FormationType> FORMATION_TYPES = RegistryHelper.registry(FormationArrays.MOD_ID,"formation_types");
 
     public static final RegistryHelper.DataPackRegistry<Formation<?,?>> FORMATIONS = RegistryHelper.dataPackRegistry(
             FormationArrays.MOD_ID,

@@ -40,7 +40,10 @@ public class CoreCapabilities {
                 (level,pos,state,entity,context)->
                     state.is(ModTags.Blocks.FORMATION_NODE) ? new BlockTagFormationNode(level,pos,state,entity) : null
                 ,
-                Blocks.DRAGON_EGG //TODO find out how i can get this for ALL blocks
+                Blocks.DRAGON_EGG,
+                Blocks.DIAMOND_BLOCK,
+                Blocks.GOLD_BLOCK,
+               Blocks.IRON_BLOCK
         );
 
     }

@@ -3,6 +3,7 @@ package net.lucent.formation_arrays.core.formations.state_handled;
 import net.lucent.formation_arrays.api.formations.Formation;
 import net.lucent.formation_arrays.api.formations.FormationInstance;
 import net.lucent.formation_arrays.api.formations.FormationRuntimeData;
+import net.lucent.formation_arrays.api.nodes.FormationNodeType;
 import net.lucent.formation_arrays.api.nodes.NodeManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -21,16 +22,19 @@ public class StateHandledFormationInstance<T extends FormationRuntimeData,S exte
         this.handler = handler;
     }
 
+
+
     @Override
     public void tick(Level level,NodeManager manager){
-        if(wasActiveLastTick && !handler.isActive(level)){
-            //TODO deactivate
-        }else if(!wasActiveLastTick && handler.isActive(level)){
-            //TODO activate
+        boolean active = handler.isActive(level,manager);
+        if(wasActiveLastTick && !active){
+            formation.deactivate(runtimeData,handler,level);
+        }else if(!wasActiveLastTick && active){
+            formation.activate(runtimeData,handler,level);
         }
 
-        wasActiveLastTick = handler.isActive(level);
-        formation.tick(runtimeData,handler,level);
+        wasActiveLastTick = active;
+        if(active) formation.tick(runtimeData,handler,level);
     }
 
     @Override
@@ -49,8 +53,8 @@ public class StateHandledFormationInstance<T extends FormationRuntimeData,S exte
     }
 
     @Override
-    public Set<BlockPos> getListenedNodePositions() {
-        return Set.of();
+    public Set<BlockPos> getListenedNodePositions(NodeManager manager, BlockPos pos, FormationNodeType type) {
+        return formation.getRequiredActivationNodes(manager,pos,type);
     }
 
     @Override
@@ -70,7 +74,7 @@ public class StateHandledFormationInstance<T extends FormationRuntimeData,S exte
 
     @Override
     public boolean isValid(Level level, NodeManager nodeManager) {
-        return handler.isValid(level);
+        return handler.isValid(level,nodeManager);
     }
 
 
