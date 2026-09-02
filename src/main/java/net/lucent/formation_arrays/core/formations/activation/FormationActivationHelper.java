@@ -23,9 +23,9 @@ public class FormationActivationHelper {
 
 
     private static void addFormation(Formation<?,?> formation){
-        System.out.println("created links for formation :"+formation.getClass());
+
         for(FormationNodeType type : formation.activationNodes()) {
-            System.out.println("creating connection for type : "+type.type());
+
             typeToFormations.computeIfAbsent(type, key -> new HashSet<>()).add(formation);
         }
     }

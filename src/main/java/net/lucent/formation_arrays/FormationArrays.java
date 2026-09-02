@@ -39,14 +39,5 @@ public class FormationArrays {
         NodeTypeFactories.register(modEventBus);
     }
 
-    @SubscribeEvent
-    public static void onStarting(ServerStartedEvent event){
-        Collection<Block> blocks = BlockUtil.getNodeTypeProviders();
-        System.out.println("nodes");
-        for(Block block : blocks) {
-            System.out.println(block.getName());
-        }
-
-    }
 
 }

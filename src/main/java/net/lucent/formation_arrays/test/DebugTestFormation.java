@@ -1,11 +1,14 @@
 package net.lucent.formation_arrays.test;
 
+import io.netty.buffer.ByteBuf;
 import net.lucent.formation_arrays.FormationArrays;
+import net.lucent.formation_arrays.api.formations.FormationInstance;
 import net.lucent.formation_arrays.api.formations.FormationType;
 import net.lucent.formation_arrays.api.nodes.FormationNodeType;
 import net.lucent.formation_arrays.api.nodes.NodeManager;
 import net.lucent.formation_arrays.core.formations.MalformedFormationInstance;
 import net.lucent.formation_arrays.core.formations.activation.FormationActivationRecipe;
+import net.lucent.formation_arrays.core.formations.client.TickableFormationClientInstance;
 import net.lucent.formation_arrays.core.formations.state_handled.SimpleFormationStateHandler;
 import net.lucent.formation_arrays.core.formations.state_handled.StateHandledFormation;
 import net.lucent.formation_arrays.core.formations.state_handled.StateHandledFormationInstance;
@@ -21,24 +24,26 @@ import java.util.Set;
 public record DebugTestFormation(FormationActivationRecipe recipe,Optional<BlockPos> controlNode) implements StateHandledFormation<TickCounterRuntimeData, SimpleFormationStateHandler> {
 
     @Override
-    public void activate(TickCounterRuntimeData runtimeData, SimpleFormationStateHandler state, Level level) {
+    public void activate(TickCounterRuntimeData runtimeData,  Level level) {
         FormationArrays.LOGGER.debug("DEBUG FORMATION ACTIVATED");
     }
 
     @Override
-    public void deactivate(TickCounterRuntimeData runtimeData, SimpleFormationStateHandler state, Level level) {
+    public void deactivate(TickCounterRuntimeData runtimeData, Level level) {
         FormationArrays.LOGGER.debug("DEBUG FORMATION DEACTIVATED");
     }
 
     @Override
-    public void destroy(TickCounterRuntimeData runtimeData, SimpleFormationStateHandler state, Level level) {
+    public void destroy(TickCounterRuntimeData runtimeData,  Level level) {
         FormationArrays.LOGGER.debug("DEBUG FORMATION DESTROYED");
     }
 
     @Override
-    public void tick(TickCounterRuntimeData runtimeData, SimpleFormationStateHandler state, Level level) {
-        FormationArrays.LOGGER.debug("DEBUG FORMATION TICKED ({})", runtimeData.ticks);
+    public boolean tick(TickCounterRuntimeData runtimeData, Level level) {
+        FormationArrays.LOGGER.debug("DEBUG FORMATION TICKED ON ({}) ({})",(level.isClientSide() ? "Client" :"Server"), runtimeData.ticks);
         runtimeData.ticks ++;
+
+        return false;
     }
 
     @Override
@@ -72,10 +77,18 @@ public record DebugTestFormation(FormationActivationRecipe recipe,Optional<Block
     }
 
     @Override
-    public StateHandledFormationInstance<TickCounterRuntimeData, SimpleFormationStateHandler> loadFormationInstance(ValueInput input) {
+    public StateHandledFormationInstance<TickCounterRuntimeData, SimpleFormationStateHandler> loadFormationInstance(ValueInput input,RegistryAccess access) {
         Optional<SimpleFormationStateHandler> optionalStateHandler = input.read("state",SimpleFormationStateHandler.CODEC);
-        return optionalStateHandler.map(simpleFormationStateHandler -> new StateHandledFormationInstance<>(this, loadRuntimeData(input.childOrEmpty("data")), simpleFormationStateHandler)).orElse(null);
+        return optionalStateHandler.map(simpleFormationStateHandler -> new StateHandledFormationInstance<>(this, loadRuntimeData(input.childOrEmpty("data"),access), simpleFormationStateHandler)).orElse(null);
 
+    }
+
+    @Override
+    public FormationInstance loadFormationInstance(ByteBuf buf, RegistryAccess access) {
+        boolean active = buf.readBoolean();
+        TickableFormationClientInstance<TickCounterRuntimeData> instance = new TickableFormationClientInstance<>(this,loadRuntimeData(buf,access));
+        instance.setActive(active);
+        return instance;
     }
 
     @Override
@@ -85,19 +98,37 @@ public record DebugTestFormation(FormationActivationRecipe recipe,Optional<Block
     }
 
     @Override
+    public void encodeFormationInstance(ByteBuf buf, RegistryAccess access, StateHandledFormationInstance<TickCounterRuntimeData, SimpleFormationStateHandler> instance) {
+        buf.writeBoolean(instance.wasActive());
+        encodeRuntimeData(buf,access,instance.runtimeData);
+    }
+
+    @Override
     public TickCounterRuntimeData createRuntimeData() {
         return new TickCounterRuntimeData();
     }
 
     @Override
-    public TickCounterRuntimeData loadRuntimeData(ValueInput input) {
+    public TickCounterRuntimeData loadRuntimeData(ValueInput input,RegistryAccess access) {
         TickCounterRuntimeData data = createRuntimeData();
         data.read(input);
         return data;
     }
 
     @Override
+    public TickCounterRuntimeData loadRuntimeData(ByteBuf buf, RegistryAccess access) {
+        TickCounterRuntimeData data = createRuntimeData();
+        data.decode(buf);
+        return data;
+    }
+
+    @Override
     public void writeRuntimeData(ValueOutput output, TickCounterRuntimeData runtimeData, RegistryAccess access) {
         runtimeData.write(output);
+    }
+
+    @Override
+    public void encodeRuntimeData(ByteBuf buf, RegistryAccess access, TickCounterRuntimeData runtimeData) {
+        runtimeData.encode(buf);
     }
 }

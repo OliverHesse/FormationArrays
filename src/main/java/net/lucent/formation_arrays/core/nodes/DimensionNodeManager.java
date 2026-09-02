@@ -225,7 +225,7 @@ public class DimensionNodeManager extends SavedData implements NodeManager {
 
                 cachedTypeSet.add(type);
             }
-            System.out.println("updated types for pos "+ pos);
+
             triggerTypesChangedEvent(newTypes,removedTypes,pos);
         }
 

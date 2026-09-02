@@ -1,45 +1,32 @@
-Formations
+How to handle networking
 
-before we handle formations we need to first handled nodes
+2 main methods
 
-formations are graphs, constructed from a set of nodes.
+method 1:
+    sync the whole formation instance, this would be done every time the instance requests it.
 
+method 2:
+    add a FormationClientInstance that holds(by default) only runtime data, this way during syncs we only need to provide runtime data
+    we can then also provide extra info (like is active or is destroyed)
 
-for this reason we need to be able to keep track of these nodes.
+I tend towards the 2nd method. but, it would require an extra generic for our formation.
+the only thing we really want handled on the client is rendering, so i could rename it to FormationRenderer?
 
-I want ANYTHING to have the ability to be treated as a node.
+either way i do not think it needs to be part of the api? since the only time we decode it is from the formation anyway, and the formation
+only needs to return a raw FormationInstance anyway
 
-for blocks and block entities it is simple, hold a map of blockPos -> node
+because the formation itself will never receive the client ver we dont need to include it as a generic
 
-for Entities, it can get a bit Trickier. This is because their block pos may be changing constantly, and multiple entities may be in the same block position
+so this can be an implementation detail.
 
-option 1
+the main thing then is setting up the ClientDimensionNodemanager
 
-when getting nodes in a location loop through all entities and check against the position
-
-pros
- - easy to implement and easy to not fuck up
-cons
- - every check needs to recompute these positions
-
-option 2
-
-each tick check their current pos against the one they are in the map entry of, if changed move
-
-pros
- - efficient
-cons
- - can be annoying to implement
+It can be miles simpler than our old one, only needing to store the formation instances, some id we can associate over the network and
+run a ticker.
 
 
- How do i want to handle a formation where the node itself is unloaded, do i treat that is it being destroyed. keep it running or save it
- moving that node over to an unloaded nodes area?
 
 
- TODO FOR NODE HANDLING
- When a chunk is loaded scan every block and create references if they do not already exist
-
- when scanning a chunk check if any of the nodes of an unloaded formation are present, If one is not present but is meant to be
- remove formation
-
- use a mixin into setBlock, then access the SimpleNodeManger and see if we can add it to the node manager
+it could also handle syncing. the tick method on the instances returns true/false
+with true meaning isDirty
+we then add it to the dirty formations and setup a patch

@@ -34,10 +34,13 @@ public class CodecUtil extends SavedData {
         );
         Identifier formationId = Identifier.parse(input.getStringOr("formation","none"));
         Registry<Formation<?,?>> formations = CoreRegistries.FORMATIONS.get(access);
+
         if(!formations.containsKey(formationId)) return  new MalformedFormationInstance();
         Formation<?,?> formation = formations.getValue(formationId);
+
         if(formation == null) return new MalformedFormationInstance();
-        FormationInstance instance = formation.loadFormationInstance(input.childOrEmpty("instance"));
+        FormationInstance instance = formation.loadFormationInstance(input.childOrEmpty("instance"),access);
+
         return instance == null ? new MalformedFormationInstance() : instance;
     }
     public static CompoundTag saveFormationInstance(FormationInstance formationInstance, RegistryAccess access){

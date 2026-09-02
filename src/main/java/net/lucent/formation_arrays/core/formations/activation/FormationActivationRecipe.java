@@ -34,7 +34,7 @@ public record FormationActivationRecipe(List<Node> nodes, boolean canRotate){
      * @return true -> create a formation, false -> do not create a formation
      */
     public boolean tryActive(NodeManager nodeManager, BlockPos pos, FormationNodeType type){
-        System.out.println("trying to activate");
+
         Node node = getNode(type);
         if(node == null) return false;
 

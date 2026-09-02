@@ -1,5 +1,6 @@
 package net.lucent.formation_arrays.api.formations;
 
+import io.netty.buffer.ByteBuf;
 import net.lucent.formation_arrays.api.nodes.FormationNodeType;
 import net.lucent.formation_arrays.api.nodes.NodeManager;
 import net.minecraft.core.BlockPos;
@@ -47,12 +48,18 @@ public interface Formation<T extends FormationRuntimeData,S extends FormationIns
      * @return a new formation instance
      */
     S createFormationInstance(NodeManager nodeManager, BlockPos pos, FormationNodeType type);
-    S loadFormationInstance(ValueInput input);
+    S loadFormationInstance(ValueInput input,RegistryAccess access);
+    //since we never pass it to the formation it can be ANY instance(only used when first created)
+    FormationInstance loadFormationInstance(ByteBuf buf,RegistryAccess access);
+
     void writeFormationInstance(ValueOutput output, S instance, RegistryAccess access);
+    void encodeFormationInstance(ByteBuf buf,RegistryAccess access,S instance);
+
 
     T createRuntimeData();
-    T loadRuntimeData(ValueInput input);
+    T loadRuntimeData(ValueInput input,RegistryAccess access);
+    T loadRuntimeData(ByteBuf buf,RegistryAccess access);
     void writeRuntimeData(ValueOutput output,T runtimeData, RegistryAccess access);
-
+    void encodeRuntimeData(ByteBuf buf,RegistryAccess access,T runtimeData);
 
 }

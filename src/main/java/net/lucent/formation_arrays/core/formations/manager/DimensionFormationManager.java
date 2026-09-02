@@ -1,6 +1,5 @@
-package net.lucent.formation_arrays.core.formations;
+package net.lucent.formation_arrays.core.formations.manager;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.lucent.formation_arrays.FormationArrays;
 import net.lucent.formation_arrays.api.formations.Formation;
@@ -8,18 +7,18 @@ import net.lucent.formation_arrays.api.formations.FormationInstance;
 import net.lucent.formation_arrays.api.nodes.FormationNodeType;
 import net.lucent.formation_arrays.api.nodes.NodeManager;
 import net.lucent.formation_arrays.api.nodes.events.NodeTypesChangedEvent;
+import net.lucent.formation_arrays.core.formations.MalformedFormationInstance;
+import net.lucent.formation_arrays.core.formations.PlacedFormation;
 import net.lucent.formation_arrays.core.formations.activation.FormationActivationHelper;
 import net.lucent.formation_arrays.core.nodes.DimensionNodeManager;
-import net.lucent.formation_arrays.util.CodecUtil;
+import net.lucent.formation_arrays.network.DimensionFormationManagerPatchPacket;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
+import net.neoforged.neoforge.network.PacketDistributor;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
@@ -45,60 +44,38 @@ public class DimensionFormationManager extends SavedData {
     public DimensionFormationManager(ServerLevel level,Set<PlacedFormation> formations){
         this.level = level;
         for(PlacedFormation formation : formations){
-            if(formation.instance instanceof MalformedFormationInstance) {
-                System.out.println("discarding formation");
+            if(formation.instance() instanceof MalformedFormationInstance) {
+
                 continue;
             };
             placedFormations.add(formation);
-            instanceToPlacement.put(formation.instance,formation);
+            instanceToPlacement.put(formation.instance(),formation);
 
-            Set<BlockPos> listenedPos = formation.instance.getListenedNodePositions();
-            listenedPos.forEach(listenerPos->listeners.computeIfAbsent(listenerPos,key->new HashSet<>()).add(formation.instance));
-            listenedPositions.put(formation.instance,listenedPos);
+            Set<BlockPos> listenedPos = formation.instance().getListenedNodePositions();
+            listenedPos.forEach(listenerPos->listeners.computeIfAbsent(listenerPos,key->new HashSet<>()).add(formation.instance()));
+            listenedPositions.put(formation.instance(),listenedPos);
 
-            this.formations.add(formation.instance);
-            System.out.println("loaded formation");
+
+
         }
 
     }
-    public record PlacedFormation(Set<BlockPos> nodes, FormationInstance instance){
+
+    //TODO consider removing formations, since i can just use instanceToPlacements key set
 
 
-        public static Codec<PlacedFormation> codec(RegistryAccess access){
-            return RecordCodecBuilder.create(
-                    instance->instance.group(
-                            BlockPos.CODEC.listOf().xmap(Set::copyOf,List::copyOf).fieldOf("nodes").forGetter(PlacedFormation::nodes),
-                            CompoundTag.CODEC.xmap(
-                                    tag -> CodecUtil.loadFormationInstance(tag,access),
-                                    object -> CodecUtil.saveFormationInstance(object,access)
-                            ).fieldOf("formation").forGetter(PlacedFormation::instance)
-                    ).apply(instance,PlacedFormation::new)
-            );
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o == null || getClass() != o.getClass()) return false;
-            PlacedFormation that = (PlacedFormation) o;
-            return Objects.equals(nodes, that.nodes) && Objects.equals(instance.getFormation().getClass(), that.instance.getFormation().getClass());
-        }
-
-        @Override
-        public int hashCode() {
-
-            return instance.getFormation() == null ? Objects.hash(nodes) :Objects.hash(nodes, instance.getFormation().getClass());
-        }
-    }
-
-    //TODO consider how i simplify this process
     private final Set<PlacedFormation> placedFormations = new HashSet<>();
     private final Map<FormationInstance,PlacedFormation> instanceToPlacement = new HashMap<>();
 
-    private final Set<FormationInstance> formations = new HashSet<>();
-    private final Set<FormationInstance> destroyedFormations = new HashSet<>();
 
-    public Map<BlockPos,Set<FormationInstance>> listeners = new HashMap<>();
-    public Map<FormationInstance,Set<BlockPos>> listenedPositions = new HashMap<>();
+    private final Set<PlacedFormation> destroyedFormations = new HashSet<>();
+
+    private final Map<BlockPos,Set<FormationInstance>> listeners = new HashMap<>();
+    private final Map<FormationInstance,Set<BlockPos>> listenedPositions = new HashMap<>();
+
+    //network patching
+    private final Set<PlacedFormation> dirtyFormations = new HashSet<>();
+    private final Set<Long> removedFormations = new HashSet<>();
 
     private final ServerLevel level;
 
@@ -107,9 +84,9 @@ public class DimensionFormationManager extends SavedData {
     }
 
     public void tryCreateFormation(NodeManager nodeManager, Formation<?,?> formation, BlockPos pos, FormationNodeType type){
-        System.out.println("trying to create formation");
+
         if(!formation.tryActive(nodeManager,pos,type)) return;
-        System.out.println("nodes valid");
+
         FormationInstance instance = formation.createFormationInstance(nodeManager,pos,type);
 
         PlacedFormation placedFormation = new PlacedFormation(formation.getRequiredActivationNodes(nodeManager,pos,type),instance);
@@ -122,14 +99,15 @@ public class DimensionFormationManager extends SavedData {
 
         listenedPos.forEach(listenerPos->listeners.computeIfAbsent(listenerPos,key->new HashSet<>()).add(instance));
 
-        formations.add(instance);
+
         listenedPositions.put(instance,listenedPos);
 
         setDirty();
     }
 
     public void scheduleFormationRemoval(FormationInstance instance){
-        destroyedFormations.add(instance);
+        if(!instanceToPlacement.containsKey(instance)) return;
+        destroyedFormations.add(instanceToPlacement.get(instance));
     }
 
     public void removeFormation(FormationInstance instance){
@@ -142,7 +120,6 @@ public class DimensionFormationManager extends SavedData {
             return val.isEmpty() ? null : val;
         }));
 
-        formations.remove(instance);
 
         instance.destroyed(level,DimensionNodeManager.getNodeManger(level));
 
@@ -157,12 +134,11 @@ public class DimensionFormationManager extends SavedData {
         NodeManager manager = DimensionNodeManager.getNodeManger(level);
         for(FormationInstance instance : triggeredListeners) {
             instance.nodeTypesChanged(level, manager, event.getPos());
-            if(!instance.isValid(level,manager)) destroyedFormations.add(instance);
+            if(!instance.isValid(level,manager)) destroyedFormations.add(instanceToPlacement.get(instance));
         }
 
         for(FormationNodeType newType : event.getAdded()){
-            System.out.println("checking formations ("+FormationActivationHelper.getFormations(newType).size()+") for type "+newType.type());
-            FormationActivationHelper.getFormations(newType).forEach(formation -> tryCreateFormation(manager,formation,event.getPos(),newType));
+             FormationActivationHelper.getFormations(newType).forEach(formation -> tryCreateFormation(manager,formation,event.getPos(),newType));
         }
 
         setDirty();
@@ -189,17 +165,33 @@ public class DimensionFormationManager extends SavedData {
      */
     public void init(){
         NodeManager manager = DimensionNodeManager.getNodeManger(level);
-        for(FormationInstance instance : formations){
-            if(!instance.isValid(level,manager)) destroyedFormations.add(instance);
+        for(PlacedFormation placedFormation : instanceToPlacement.values()){
+            if(!placedFormation.instance().isValid(level,manager)) destroyedFormations.add(placedFormation);
         }
     }
 
     public void run(){
         NodeManager manager = DimensionNodeManager.getNodeManger(level);
-        for(FormationInstance instance : formations) instance.tick(level,manager);
+        for(PlacedFormation placedFormation : instanceToPlacement.values()){
+            if(placedFormation.instance().tick(level,manager)) dirtyFormations.add(placedFormation);
+        }
 
-        for(FormationInstance instance : destroyedFormations) removeFormation(instance);
+        for(PlacedFormation placedFormation  : destroyedFormations) {
+            removeFormation(placedFormation.instance());
+            removedFormations.add(placedFormation.id());
+        };
         destroyedFormations.clear();
+
+        if(!dirtyFormations.isEmpty() || !removedFormations.isEmpty()) sendPatch();
     }
 
+    public void sendPatch(){
+
+        DimensionFormationManagerPatch patch = new DimensionFormationManagerPatch(dirtyFormations,removedFormations);
+
+        PacketDistributor.sendToPlayersInDimension(level,new DimensionFormationManagerPatchPacket(patch));
+
+        dirtyFormations.clear();
+        removedFormations.clear();
+    }
 }

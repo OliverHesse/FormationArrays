@@ -30,15 +30,9 @@ public class NodeManagerEventHandler {
         DimensionNodeManager nodeManager = DimensionNodeManager.getNodeManger(serverLevel);
         ChunkPos chunkPos = event.getChunk().getPos();
 
-        //test
-        BlockPos test = new BlockPos(40,74,12);
-        if(chunkPos.contains(test)){
-            System.out.println("stop here");
-        }
+
         for(BlockPos pos : nodeManager.getAllNodeLocations()){
             if(chunkPos.contains(pos)) {
-                System.out.println("clearing unloaded nodes");
-                System.out.println(chunkPos);
                 nodeManager.loadNode(pos);
             };
         }
@@ -64,10 +58,8 @@ public class NodeManagerEventHandler {
         for(BlockPos pos : nodeManager.getAllNodeLocations()){
             if(chunkPos.contains(pos)) {
 
-                System.out.println("chunk unloaded");
-                System.out.println(chunkPos);
                 nodeManager.unloadNode(pos);
-                System.out.println("finished clear");
+
             };
         }
 
@@ -100,9 +92,8 @@ public class NodeManagerEventHandler {
                                 sectionPos.minBlockY() + y,
                                 sectionPos.minBlockZ() + z
                         );
-                        System.out.println("existing node detected "+state.getBlock());
-                        System.out.println(globalPos);
-                        //attempt to add
+
+
                         DimensionNodeManager.getNodeManger((ServerLevel) chunk.getLevel()).addNodeProvider(globalPos);
                     }
                 }

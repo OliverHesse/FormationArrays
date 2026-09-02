@@ -1,5 +1,6 @@
 package net.lucent.formation_arrays.core.formations;
 
+import io.netty.buffer.ByteBuf;
 import net.lucent.formation_arrays.api.formations.Formation;
 import net.lucent.formation_arrays.api.formations.FormationInstance;
 import net.lucent.formation_arrays.api.nodes.NodeManager;
@@ -12,8 +13,8 @@ import java.util.Set;
 
 public class MalformedFormationInstance implements FormationInstance {
     @Override
-    public void tick(Level level, NodeManager manager) {
-
+    public boolean tick(Level level, NodeManager manager) {
+        return false;
     }
 
     @Override
@@ -58,6 +59,16 @@ public class MalformedFormationInstance implements FormationInstance {
 
     @Override
     public void write(ValueOutput output, RegistryAccess access) {
+
+    }
+
+    @Override
+    public void encode(ByteBuf buf, RegistryAccess access) {
+
+    }
+
+    @Override
+    public void decode(ByteBuf buf, RegistryAccess access) {
 
     }
 }

@@ -1,5 +1,6 @@
 package net.lucent.formation_arrays.api.formations;
 
+import io.netty.buffer.ByteBuf;
 import net.lucent.formation_arrays.api.nodes.FormationNodeType;
 import net.lucent.formation_arrays.api.nodes.NodeManager;
 import net.minecraft.core.BlockPos;
@@ -15,7 +16,12 @@ import java.util.Set;
  * we do not need them as generics, since
  */
 public interface FormationInstance{
-    void tick(Level level,NodeManager manager);
+    /**
+     * @param level the level it was ticked in
+     * @param manager the node manager this formation was created from
+     * @return true -> dirty so trigger sync, false -> not dirty no sync
+     */
+    boolean tick(Level level,NodeManager manager);
 
     //tells the instance it has officially been created
     void created(Level level,NodeManager manager);
@@ -47,4 +53,8 @@ public interface FormationInstance{
     boolean isValid(Level level,NodeManager nodeManager);
 
     void write(ValueOutput output, RegistryAccess access);
+
+
+    void encode(ByteBuf buf,RegistryAccess access);
+    void decode(ByteBuf buf,RegistryAccess access);
 }

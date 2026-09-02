@@ -25,7 +25,6 @@ public class CoreDataMaps {
 
     @SubscribeEvent // on the mod event bus
     public static void registerDataMapTypes(RegisterDataMapTypesEvent event) {
-        System.out.println("registered data map");
         event.register(BLOCK_NODE_TYPE_PROVIDER);
 
     }

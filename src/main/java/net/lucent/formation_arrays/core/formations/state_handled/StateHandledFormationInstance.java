@@ -1,5 +1,6 @@
 package net.lucent.formation_arrays.core.formations.state_handled;
 
+import io.netty.buffer.ByteBuf;
 import net.lucent.formation_arrays.api.formations.Formation;
 import net.lucent.formation_arrays.api.formations.FormationInstance;
 import net.lucent.formation_arrays.api.formations.FormationRuntimeData;
@@ -25,18 +26,25 @@ public class StateHandledFormationInstance<T extends FormationRuntimeData,S exte
     }
 
 
-
+    public boolean wasActive(){
+        return wasActiveLastTick;
+    }
     @Override
-    public void tick(Level level,NodeManager manager){
+    public boolean tick(Level level,NodeManager manager){
         boolean active = handler.isActive(level,manager);
         if(wasActiveLastTick && !active){
-            formation.deactivate(runtimeData,handler,level);
+            formation.deactivate(runtimeData,level);
+            wasActiveLastTick = false;
+            return true;
         }else if(!wasActiveLastTick && active){
-            formation.activate(runtimeData,handler,level);
+            formation.activate(runtimeData,level);
+            formation.tick(runtimeData,level);
+            wasActiveLastTick = true;
+            return true;
         }
 
-        wasActiveLastTick = active;
-        if(active) formation.tick(runtimeData,handler,level);
+        return active && formation.tick(runtimeData, level);
+
     }
 
     @Override
@@ -46,7 +54,7 @@ public class StateHandledFormationInstance<T extends FormationRuntimeData,S exte
 
     @Override
     public void destroyed(Level level,NodeManager manager) {
-        formation.destroy(runtimeData,handler,level);
+        formation.destroy(runtimeData,level);
     }
 
     @Override
@@ -85,5 +93,13 @@ public class StateHandledFormationInstance<T extends FormationRuntimeData,S exte
         formation.writeFormationInstance(output,this,access);
     }
 
+    @Override
+    public void encode(ByteBuf buf, RegistryAccess access) {
+        formation.encodeFormationInstance(buf,access,this);
+    }
 
+    @Override
+    public void decode(ByteBuf buf, RegistryAccess access) {
+        //not a client instance so does nothing
+    }
 }

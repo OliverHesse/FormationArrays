@@ -1,0 +1,8 @@
+
+
+Client
+    - Client instance is important
+    - BUT does not actually need to tick the formation (i just did that)
+    - it could handle rendering by itself
+    - so while it CAN interact with the formation it does not NEED to.
+    very usefull for formations with complex rendering, so you can offload it to another class
