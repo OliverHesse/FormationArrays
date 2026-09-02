@@ -15,7 +15,10 @@ public class NodeTypeFactories {
             "fixed",
             FixedBlockNodeTypeProvider.Factory::new
     );
-
+    public static final DeferredHolder<BlockNodeTypeFactory,BlockNodeTypeFactory> STATEFUL = FACTORIES.register(
+            "stateful",
+            StateBlockNodeTypeProvider.Factory::new
+    );
     public static void register(IEventBus eventBus){
 
         FACTORIES.register(eventBus);

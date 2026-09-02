@@ -24,7 +24,6 @@ public class TickableFormationClientInstance<T extends FormationRuntimeData> imp
     public void tick(Level level) {
         if(wasActive && !active){
             tickableFormation.deactivate(runtimeData,level);
-            return;
         }else if(!wasActive && active){
             tickableFormation.activate(runtimeData,level);
         }

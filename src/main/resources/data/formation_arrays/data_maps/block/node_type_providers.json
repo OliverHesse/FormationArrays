@@ -19,10 +19,15 @@
       ]
     },
     "minecraft:dragon_egg": {
-      "type": "formation_arrays:fixed",
-      "types": [
-        "formation_arrays:magic_node"
-      ]
+      "type": "formation_arrays:stateful",
+      "state_types":{
+        "0":  [
+          "formation_arrays:magic_node"
+        ],
+        "1": [
+          "formation_arrays:iron_node"
+        ]
+      }
     }
   }
 }

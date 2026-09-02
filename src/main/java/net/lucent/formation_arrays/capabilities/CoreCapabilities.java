@@ -3,8 +3,10 @@ package net.lucent.formation_arrays.capabilities;
 import net.lucent.formation_arrays.FormationArrays;
 import net.lucent.formation_arrays.api.nodes.FormationNode;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.EntityCapability;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
@@ -16,7 +18,12 @@ public class CoreCapabilities {
                     FormationNode.class,
                     Void.class
             );
-
+    public static final BlockCapability<StatefulBlock,Void> STATEFUL_BLOCK =
+            BlockCapability.create(
+                    Identifier.fromNamespaceAndPath(FormationArrays.MOD_ID,"stateful_block"),
+                    StatefulBlock.class,
+                    Void.class
+                    );
     @SubscribeEvent
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
         /*
@@ -27,7 +34,14 @@ public class CoreCapabilities {
         );
 
          */
+        /*
+        event.registerBlock(
+                CoreCapabilities.STATEFUL_BLOCK,
+                (level,state,pos,entity,c)->{return null},
+                Blocks.DIAMOND_BLOCK
+        )
 
+         */
 
     }
 

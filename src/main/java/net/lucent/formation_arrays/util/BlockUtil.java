@@ -8,9 +8,11 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.registries.datamaps.DataMapEntry;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 
@@ -19,6 +21,24 @@ import java.util.stream.Collectors;
 
 public class BlockUtil {
 
+    /**
+     * tries to get the capability on a block without force loading the chunk
+     * @return the capability
+     * @param <T>
+     */
+    public static <T> T getCapabilityIfLoaded(BlockCapability<T, Void> capability,Level level,BlockPos pos){
+        BlockState state = getBlockNoForceLoad(level,pos);
+        return (state == null) ? null :  capability.getCapability(level,pos,state,getBlockEntityNoForceLoad(level,pos),null);
+    }
+    /**
+     * tries to get the capability on a block without force loading the chunk
+     * @return the capability
+     * @param <T>
+     */
+    public static <T> T getCapabilityIfLoaded(BlockCapability<T, Void> capability,Level level,BlockPos pos,BlockState state){
+
+        return capability.getCapability(level,pos,state,getBlockEntityNoForceLoad(level,pos),null);
+    }
 
     public static BlockState getBlockNoForceLoad(Level level, BlockPos pos){
         ChunkPos chunkPos = ChunkPos.containing(pos);
@@ -27,6 +47,14 @@ public class BlockUtil {
 
         if(access == null) return null;
         return access.getBlockState(pos);
+    }
+    public static BlockEntity getBlockEntityNoForceLoad(Level level, BlockPos pos){
+        ChunkPos chunkPos = ChunkPos.containing(pos);
+
+        ChunkAccess access = level.getChunkSource().getChunk(chunkPos.x(), chunkPos.z(), ChunkStatus.FULL,false);
+
+        if(access == null) return null;
+        return access.getBlockEntity(pos);
     }
 
     public static ResourceKey<Block> getBlockResourceKey(Level level, BlockPos pos){
