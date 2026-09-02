@@ -18,11 +18,16 @@ public record SimpleFormationStateHandler(List<Node> nodes,Node controlNode) imp
     public static Codec<SimpleFormationStateHandler> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
                     Node.CODEC.listOf().fieldOf("nodes").forGetter(SimpleFormationStateHandler::nodes),
-                    Node.CODEC.optionalFieldOf("control_node").forGetter(val -> Optional.ofNullable(val.controlNode))
-                    ).apply(instance,(nodes,control)->new SimpleFormationStateHandler(nodes,control.orElse(null)))
+                    Codec.INT.optionalFieldOf("control_node").forGetter(SimpleFormationStateHandler::getControlNode)
+                    ).apply(instance,(nodes,control)->SimpleFormationStateHandler.of(nodes,control.orElse(-1)))
             );
     public static SimpleFormationStateHandler of(List<Node> nodes, int controlNode){
         return controlNode == -1 ? new SimpleFormationStateHandler(nodes,null) : new SimpleFormationStateHandler(nodes, nodes.get(controlNode));
+    }
+
+    private Optional<Integer> getControlNode(){
+        int index = nodes.indexOf(controlNode);
+        return index == -1 ? Optional.empty() : Optional.of(index);
     }
 
     public boolean isNodeValid(NodeManager nodeManager,Node node){
