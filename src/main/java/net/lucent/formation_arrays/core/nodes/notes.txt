@@ -18,3 +18,10 @@ that way I can directly unload with 0 reference needed
 Node Types(TODO)
 as a default create a node type capability that pulls from a datamap attached to blocks
 this would be applied to ALL blocks and only is created if they do have a datamap
+
+
+
+
+TODO!!!!
+I need to reconsider detection, the chunk loading is fine, the problem now is placing, since it will also trigger on chunk creation it will trigger for ALL blocks
+in that chunk

@@ -1,1 +1,10 @@
-create some type of Node graph instance, that maps each graph node to a real node and position
+Modify how nodes work
+
+nodes no longer exist, a node is a block pos. what flags and entities do is provide types to a block pos
+
+for this reason we are changing it to NodeTypeProvider
+
+
+the level is provided as a context
+
+holder and reference should not return a NodeTypeProvider directly

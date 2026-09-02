@@ -1,0 +1,28 @@
+{
+  "values": {
+    "minecraft:diamond_block": {
+      "type": "formation_arrays:fixed",
+      "types": [
+        "formation_arrays:diamond_node"
+      ]
+    },
+    "minecraft:gold_block": {
+      "type": "formation_arrays:fixed",
+      "types": [
+        "formation_arrays:gold_node"
+      ]
+    },
+    "minecraft:iron_block": {
+      "type": "formation_arrays:fixed",
+      "types": [
+        "formation_arrays:iron_node"
+      ]
+    },
+    "minecraft:dragon_egg": {
+      "type": "formation_arrays:fixed",
+      "types": [
+        "formation_arrays:magic_node"
+      ]
+    }
+  }
+}

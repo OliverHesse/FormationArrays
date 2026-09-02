@@ -1,8 +1,7 @@
 package net.lucent.formation_arrays.core.nodes;
 
 import net.lucent.formation_arrays.FormationArrays;
-import net.lucent.formation_arrays.capabilities.CoreCapabilities;
-import net.lucent.formation_arrays.util.BlockCapabilityUtil;
+import net.lucent.formation_arrays.util.BlockUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.ServerLevel;
@@ -26,8 +25,6 @@ public class NodeManagerEventHandler {
         if(!(event.getChunk().getLevel() instanceof ServerLevel serverLevel)) return;
 
 
-
-
         //if there was a pos in this chunk, clear all unloaded nodes
 
         DimensionNodeManager nodeManager = DimensionNodeManager.getNodeManger(serverLevel);
@@ -42,23 +39,23 @@ public class NodeManagerEventHandler {
             if(chunkPos.contains(pos)) {
                 System.out.println("clearing unloaded nodes");
                 System.out.println(chunkPos);
-                nodeManager.loadNodes(pos);
+                nodeManager.loadNode(pos);
             };
         }
 
+        Collection<Block> potentialNodeProviders = BlockUtil.getNodeTypeProviders();
         //discover nodes in this chunk
         for(int i = 0; i<event.getChunk().getSectionsCount(); i++){
             LevelChunkSection section = event.getChunk().getSection(i);
-            if(!hasPotentialNodes(BlockCapabilityUtil.getPossibleBlocks(CoreCapabilities.BLOCK_FORMATION_NODE),section)) continue;
+            if(!hasPotentialNodeProviders(potentialNodeProviders,section)) continue;
 
-            discoverNodes(event.getChunk(),section,i);
+            discoverNodeProviders(potentialNodeProviders,event.getChunk(),section,i);
         }
 
     }
     @SubscribeEvent
     public static void onUnload(ChunkEvent.Unload event){
         if(!(event.getChunk().getLevel() instanceof  ServerLevel serverLevel)) return;
-
 
         //if a pos is in this chunk unload nodes at that pos
 
@@ -69,7 +66,7 @@ public class NodeManagerEventHandler {
 
                 System.out.println("chunk unloaded");
                 System.out.println(chunkPos);
-                nodeManager.unloadNodes(pos);
+                nodeManager.unloadNode(pos);
                 System.out.println("finished clear");
             };
         }
@@ -84,20 +81,19 @@ public class NodeManagerEventHandler {
        DimensionNodeManager.getNodeManger(level).calculateCachedTypes();
     }
 
-    public static boolean hasPotentialNodes(Collection<Block> blocks, LevelChunkSection section){
+    public static boolean hasPotentialNodeProviders(Collection<Block> blocks, LevelChunkSection section){
         return section.maybeHas(state->blocks.contains(state.getBlock()));
     }
 
-    public static void discoverNodes(ChunkAccess chunk, LevelChunkSection section, int sectionId){
+    public static void discoverNodeProviders(Collection<Block> nodeTypeProviders,ChunkAccess chunk, LevelChunkSection section, int sectionId){
         SectionPos sectionPos = SectionPos.of(chunk.getPos(),chunk.getSectionYFromSectionIndex(sectionId));
 
-        Collection<Block> nodeBlocks = BlockCapabilityUtil.getPossibleBlocks(CoreCapabilities.BLOCK_FORMATION_NODE);
         for (int x = 0; x < 16; x++) {
             for (int y = 0; y < 16; y++) {
                 for (int z = 0; z < 16; z++) {
 
                     BlockState state = section.getBlockState(x,y,z);
-                    if (nodeBlocks.contains(state.getBlock())) {
+                    if (nodeTypeProviders.contains(state.getBlock())) {
 
                         BlockPos globalPos = new BlockPos(
                                 sectionPos.minBlockX() + x,
@@ -107,7 +103,7 @@ public class NodeManagerEventHandler {
                         System.out.println("existing node detected "+state.getBlock());
                         System.out.println(globalPos);
                         //attempt to add
-                        DimensionNodeManager.getNodeManger((ServerLevel) chunk.getLevel()).addNode(globalPos);
+                        DimensionNodeManager.getNodeManger((ServerLevel) chunk.getLevel()).addNodeProvider(globalPos);
                     }
                 }
             }
