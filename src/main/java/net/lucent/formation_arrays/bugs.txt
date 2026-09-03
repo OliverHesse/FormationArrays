@@ -1,4 +1,0 @@
-TODO KNOWN BUGS
-    - when destroying a control node for a loaded formation, it will deactivate and then destroy it
-      intended behaviour: only deactivate
-    - formation not saved/saved formation not used, when activating a formation that had been loaded from disk deactivated
