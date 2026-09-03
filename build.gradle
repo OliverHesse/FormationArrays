@@ -114,7 +114,7 @@ configurations {
 }
 
 dependencies {
-    implementation("com.github.MrEizy:ZenithLib:trunk~26.2-SNAPSHOT")
+    implementation("com.github.MrEizy:ZenithLib:e4d867b9d8")
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"
