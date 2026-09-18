@@ -116,21 +116,21 @@ public record FixedFormationActivationRecipe(List<Node> nodes, boolean canRotate
         return types;
     }
 
+    //uses some tricks, essentially assumes the order of global nodes is equivalent to the order of recipe nodes
     @Override
     public Node getNode(List<Node> globalPositionedNodes, BlockPos pos) {
-        if (globalPositionedNodes.isEmpty()) {
+        if (globalPositionedNodes.size() != nodes.size()) {
             return null;
         }
-        BlockPos center = getCenterFromNodes(globalPositionedNodes);
 
-        BlockPos globalPos = center.offset(pos);
-
-        for (Node node : globalPositionedNodes) {
-            if (node.pos().equals(globalPos)) {
-                return node;
-            }
+        Node localNode = getNode(pos);
+        if (localNode == null) {
+            return null;
         }
-        return null;
+
+        int localIndex = nodes.indexOf(localNode);
+
+        return globalPositionedNodes.get(localIndex);
     }
 
     @Override
