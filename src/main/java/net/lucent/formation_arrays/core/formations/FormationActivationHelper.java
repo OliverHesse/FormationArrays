@@ -1,4 +1,4 @@
-package net.lucent.formation_arrays.core.formations.activation;
+package net.lucent.formation_arrays.core.formations;
 
 import net.lucent.formation_arrays.api.CoreRegistries;
 import net.lucent.formation_arrays.api.formations.Formation;
@@ -7,11 +7,7 @@ import net.minecraft.core.RegistryAccess;
 
 import java.util.*;
 
-/**
- * maps node types to all formations that have that type as an activation node type
- */
 public class FormationActivationHelper {
-
     private static final Map<FormationNodeType, Set<Formation<?,?>>> typeToFormations = new HashMap<>();
 
     public static void init(RegistryAccess access){

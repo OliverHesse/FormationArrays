@@ -1,16 +1,13 @@
 package net.lucent.formation_arrays.network;
 
-import io.netty.buffer.Unpooled;
 import net.lucent.formation_arrays.FormationArrays;
-import net.lucent.formation_arrays.core.formations.ClientFormationManagerHolder;
-import net.lucent.formation_arrays.core.formations.manager.DimensionFormationManager;
-import net.lucent.formation_arrays.core.formations.manager.DimensionFormationManagerPatch;
-import net.minecraft.network.FriendlyByteBuf;
+import net.lucent.formation_arrays.core.formations.DimensionFormationManagerPatch;
+import net.lucent.formation_arrays.core.formations.client.ClientDimensionFormationManager;
+import net.lucent.formation_arrays.core.formations.client.ClientDimensionFormationManagerHolder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record DimensionFormationManagerPatchPacket(DimensionFormationManagerPatch patch) implements CustomPacketPayload {
@@ -30,7 +27,7 @@ public record DimensionFormationManagerPatchPacket(DimensionFormationManagerPatc
     public static void handle(DimensionFormationManagerPatchPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
 
-            packet.patch.applyPatch(ClientFormationManagerHolder.getOrCreate(context.player().level()),context.player().registryAccess());
+            packet.patch.applyPatch(ClientDimensionFormationManagerHolder.getOrCreate(context.player().level()),context.player().registryAccess());
         });
     }
 }

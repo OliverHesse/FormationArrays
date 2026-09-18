@@ -3,8 +3,8 @@ package net.lucent.formation_arrays.core.formations;
 import net.lucent.formation_arrays.FormationArrays;
 import net.lucent.formation_arrays.api.nodes.events.NodeStateChangeEvent;
 import net.lucent.formation_arrays.api.nodes.events.NodeTypesChangedEvent;
-import net.lucent.formation_arrays.core.formations.manager.ClientDimensionFormationManger;
-import net.lucent.formation_arrays.core.formations.manager.DimensionFormationManager;
+import net.lucent.formation_arrays.core.formations.client.ClientDimensionFormationManager;
+import net.lucent.formation_arrays.core.formations.client.ClientDimensionFormationManagerHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -22,11 +22,11 @@ public class FormationEventHandler {
     private static void onLevelLoad(LevelEvent.Unload event) {
         if (!event.getLevel().isClientSide()) return;
         if (!(event.getLevel() instanceof Level level)) return;
-        ClientFormationManagerHolder.remove(level);
+        ClientDimensionFormationManagerHolder.remove(level);
 
     }
     private static void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event){
-        ClientFormationManagerHolder.clear(); // a bit of extra safety
+        ClientDimensionFormationManagerHolder.clear(); // a bit of extra safety
     }
     @SubscribeEvent
     private static void onNodeTypeChange(NodeTypesChangedEvent event){
@@ -48,6 +48,6 @@ public class FormationEventHandler {
     @SubscribeEvent
     private static void onClientTick(ClientTickEvent.Pre event){
         if(Minecraft.getInstance().isPaused()) return;
-        for(ClientDimensionFormationManger manger : ClientFormationManagerHolder.getAllManagers()) manger.tick();
+        for(ClientDimensionFormationManager manager : ClientDimensionFormationManagerHolder.getAllManagers()) manager.tick();
     }
 }

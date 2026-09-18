@@ -1,8 +1,8 @@
 package net.lucent.formation_arrays.api;
 
 import net.lucent.formation_arrays.FormationArrays;
-import net.lucent.formation_arrays.api.formations.FormationType;
 import net.lucent.formation_arrays.api.formations.Formation;
+import net.lucent.formation_arrays.api.formations.FormationType;
 import net.lucent.formation_arrays.api.nodes.type_provider.block.BlockNodeTypeFactory;
 import net.minecraft.core.Registry;
 import net.neoforged.bus.api.SubscribeEvent;

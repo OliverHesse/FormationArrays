@@ -1,23 +1,42 @@
 package net.lucent.formation_arrays.api.formations;
 
 import io.netty.buffer.ByteBuf;
+import net.lucent.formation_arrays.api.formations.util.SerializerHandler;
+import net.lucent.formation_arrays.api.formations.util.SyncHandler;
 import net.lucent.formation_arrays.api.nodes.FormationNodeType;
 import net.lucent.formation_arrays.api.nodes.NodeManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 
 import java.util.Set;
 
-public interface Formation<T extends FormationRuntimeData,S extends FormationInstance>{
+public interface Formation<T extends RuntimeData,S extends StateHandler>{
+
+
+
+    default FormationInstance<T,S> createFormationInstance(NodeManager nodeManager, BlockPos pos, FormationNodeType type){
+        S handler = createStateHandler(nodeManager,pos,type);
+        T data = createRuntimeData(handler);
+        return createFormationInstance(data,handler);
+    }
+
+    default FormationInstance<T,S> createFormationInstance(T runtimeData,S stateHandler){
+        return new FormationInstance<>(this,runtimeData,stateHandler);
+    }
+    default FormationInstance.ClientFormationInstance<T,S> createFormationInstance(ByteBuf buf, RegistryAccess access){
+        return new FormationInstance.ClientFormationInstance<>(this, runtimeDataSyncHandler().decode(buf,access),stateHandlerSyncHandler().decode(buf,access));
+    }
+    default FormationInstance<T,S> createFormationInstance(ValueInput runtimeInput,ValueInput stateHandlerInput,RegistryAccess access){
+        return new FormationInstance<>(this, runtimeDataSerializer().read(runtimeInput,access), stateHandlerSerializer().read(stateHandlerInput,access));
+    }
 
     FormationType getType();
 
-    /**
-     * returns a set of node types required to activate
-     */
+    //returns a set of node types required to activate
     Set<FormationNodeType> activationNodes();
+
 
     /**
      * when an activation node type is detected, tests to see if we can activate the formation
@@ -40,26 +59,25 @@ public interface Formation<T extends FormationRuntimeData,S extends FormationIns
      */
     Set<BlockPos> getRequiredActivationNodes(NodeManager nodeManager, BlockPos pos, FormationNodeType type);
 
+
+    T createRuntimeData(StateHandler handler);
+    SerializerHandler<T> runtimeDataSerializer();
+    SyncHandler<T> runtimeDataSyncHandler();
+
+    S createStateHandler(NodeManager nodeManager, BlockPos pos, FormationNodeType type);
+    SerializerHandler<S> stateHandlerSerializer();
+    SyncHandler<S> stateHandlerSyncHandler();
+
+
+    void activate(T runtimeData,S stateHandler, Level level);
+    void deactivate(T runtimeData,S stateHandler, Level level);
+    void destroy(T runtimeData,S stateHandler, Level level);
+
     /**
-     * Creates a fresh instance from a given node and node type
-     * @param nodeManager the mangar handling nodes
-     * @param pos the position of the node
-     * @param type the type we detected being added
-     * @return a new formation instance
+     * @param runtimeData the current runtime data for this formation instance
+     * @param stateHandler the current state handler for this formation instance
+     * @param level the level it was ticked in
+     * @return true -> dirty so trigger sync, false -> not dirty no sync
      */
-    S createFormationInstance(NodeManager nodeManager, BlockPos pos, FormationNodeType type);
-    S loadFormationInstance(ValueInput input,RegistryAccess access);
-    //since we never pass it to the formation it can be ANY instance(only used when first created)
-    FormationInstance loadFormationInstance(ByteBuf buf,RegistryAccess access);
-
-    void writeFormationInstance(ValueOutput output, S instance, RegistryAccess access);
-    void encodeFormationInstance(ByteBuf buf,RegistryAccess access,S instance);
-
-
-    T createRuntimeData();
-    T loadRuntimeData(ValueInput input,RegistryAccess access);
-    T loadRuntimeData(ByteBuf buf,RegistryAccess access);
-    void writeRuntimeData(ValueOutput output,T runtimeData, RegistryAccess access);
-    void encodeRuntimeData(ByteBuf buf,RegistryAccess access,T runtimeData);
-
+    boolean tick(T runtimeData,S stateHandler,  Level level);
 }

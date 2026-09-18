@@ -1,4 +1,4 @@
-package net.lucent.formation_arrays.core.formations.manager;
+package net.lucent.formation_arrays.core.formations.client;
 
 import net.lucent.formation_arrays.api.formations.FormationInstance;
 import net.lucent.formation_arrays.core.formations.PlacedFormation;
@@ -7,20 +7,19 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ClientDimensionFormationManger {
-
+public class ClientDimensionFormationManager {
     private final Level level;
 
 
     private final Map<Long, PlacedFormation> clientFormations = new HashMap<>();
 
-    public ClientDimensionFormationManger(Level level){
+    public ClientDimensionFormationManager(Level level){
         this.level = level;
     }
 
-    boolean hasFormation(long id) {return clientFormations.containsKey(id);}
+    public boolean hasFormation(long id) {return clientFormations.containsKey(id);}
 
-    public FormationInstance getInstance(long id){return clientFormations.get(id).instance();}
+    public FormationInstance<?,?> getInstance(long id){return clientFormations.get(id).instance();}
 
     public void addFormation(PlacedFormation formation){
         clientFormations.put(formation.id(),formation);

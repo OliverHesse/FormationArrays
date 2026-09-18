@@ -1,8 +1,8 @@
 package net.lucent.formation_arrays.core;
 
 import net.lucent.formation_arrays.FormationArrays;
-import net.lucent.formation_arrays.core.formations.manager.DimensionFormationManager;
-import net.lucent.formation_arrays.core.formations.activation.FormationActivationHelper;
+import net.lucent.formation_arrays.core.formations.DimensionFormationManager;
+import net.lucent.formation_arrays.core.formations.FormationActivationHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;

@@ -19,7 +19,7 @@
         "types": ["formation_arrays:iron_node"]
       }
     ],
-    "can_rotate": false
+    "can_rotate": true
   },
   "control_node": [-2,0,0]
 }

@@ -1,27 +1,25 @@
-package net.lucent.formation_arrays.core.formations.manager;
+package net.lucent.formation_arrays.core.formations;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import net.lucent.formation_arrays.api.CoreRegistries;
 import net.lucent.formation_arrays.api.formations.FormationInstance;
-import net.lucent.formation_arrays.core.formations.PlacedFormation;
+import net.lucent.formation_arrays.core.formations.client.ClientDimensionFormationManager;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.connection.ConnectionType;
-import net.zic.zenithlib.network.ByteBufHelpers;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-//TODO finish
+
 public class DimensionFormationManagerPatch {
     private Set<PlacedFormation> dirty = new HashSet<>();
     private Set<Long> removed = new HashSet<>();
 
     private ByteBuf cachedBuf;
 
-    public DimensionFormationManagerPatch(Collection<PlacedFormation> dirty,Collection<Long> removed){
+    public DimensionFormationManagerPatch(Collection<PlacedFormation> dirty, Collection<Long> removed){
         this.dirty = Set.copyOf(dirty);
         this.removed = Set.copyOf(removed);
         cachedBuf = null;
@@ -38,7 +36,7 @@ public class DimensionFormationManagerPatch {
         buf.writeInt(patch.dirty.size());
         for(PlacedFormation formation : patch.dirty()){
             buf.writeLong(formation.id());
-            buf.writeIdentifier(CoreRegistries.FORMATIONS.get(buf.registryAccess()).getKey(formation.instance().getFormation()));
+            buf.writeIdentifier(formation.instance().getFormationKey(buf.registryAccess()));
             formation.instance().encode(buf,buf.registryAccess());
         }
 
@@ -51,7 +49,7 @@ public class DimensionFormationManagerPatch {
         return new DimensionFormationManagerPatch(buf.readBytes(buf.readableBytes()));
     }
 
-    public void applyPatch(ClientDimensionFormationManger manager, RegistryAccess access){
+    public void applyPatch(ClientDimensionFormationManager manager, RegistryAccess access){
         //if client has formation id tell instance to decode
         //if client does not have id tell formation to decode
 
@@ -68,8 +66,8 @@ public class DimensionFormationManagerPatch {
                 continue;
             }
 
-            FormationInstance instance = CoreRegistries.FORMATIONS.get(buf.registryAccess()).getValue(formationId).loadFormationInstance(buf,buf.registryAccess());
-            manager.addFormation(new PlacedFormation(key,Set.of(),instance));
+            FormationInstance<?,?> instance = FormationInstance.initialDecode(buf,access);
+            manager.addFormation(new PlacedFormation(key,instance,Set.of()));
 
         }
 
