@@ -9,7 +9,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 
 public interface Formation<T extends RuntimeData,S extends StateHandler>{
 
@@ -27,14 +26,16 @@ public interface Formation<T extends RuntimeData,S extends StateHandler>{
     default FormationInstance<T,S> createFormationInstance(ByteBuf buf,RegistryAccess access){
         return new FormationInstance<>(this, runtimeDataSyncHandler().decode(buf,access),stateHandlerSyncHandler().decode(buf,access));
     }
-
+    default FormationInstance<T,S> createFormationInstance(ValueInput runtimeInput,ValueInput stateHandlerInput,RegistryAccess access){
+        return new FormationInstance<>(this, runtimeDataSerializer().read(runtimeInput,access), stateHandlerSerializer().read(stateHandlerInput,access));
+    }
 
     T createRuntimeData(StateHandler handler);
     SerializerHandler<T> runtimeDataSerializer();
     SyncHandler<T> runtimeDataSyncHandler();
 
     S createStateHandler(NodeManager nodeManager, BlockPos pos, FormationNodeType type);
-    SerializerHandler<S> stateHandlerSerializerH();
+    SerializerHandler<S> stateHandlerSerializer();
     SyncHandler<S> stateHandlerSyncHandler();
 
 

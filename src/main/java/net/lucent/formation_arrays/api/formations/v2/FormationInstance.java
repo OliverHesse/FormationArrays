@@ -1,13 +1,14 @@
 package net.lucent.formation_arrays.api.formations.v2;
 
 import io.netty.buffer.ByteBuf;
-import net.lucent.formation_arrays.api.CoreRegistries;
 import net.lucent.formation_arrays.api.nodes.NodeManager;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.zic.zenithlib.network.ByteBufHelpers;
 
 import java.util.Set;
@@ -22,6 +23,14 @@ public class FormationInstance<T extends RuntimeData,S extends StateHandler>{
         this.formation = formation;
         this.runtimeData = runtimeData;
         this.stateHandler = stateHandler;
+    }
+
+    //mainly used when loading formations
+    public boolean isMalformed(){
+        return formation != null && runtimeData != null && stateHandler != null;
+    }
+    public static FormationInstance<?,?> malformed(){
+        return new FormationInstance<>(null,null,null);
     }
 
     /**
@@ -54,7 +63,7 @@ public class FormationInstance<T extends RuntimeData,S extends StateHandler>{
         formation.destroy(runtimeData,stateHandler,level);
     }
 
-    public Formation<?, ?> getFormation() {
+    public Formation<T, S> getFormation() {
         return formation;
     }
 
@@ -76,20 +85,40 @@ public class FormationInstance<T extends RuntimeData,S extends StateHandler>{
         stateHandler.nodeUnloaded(level,nodeManager,pos);
     }
 
+    public Identifier getFormationKey(RegistryAccess access){
+        //TODO update when i have changed registries to use new v2
+        return Identifier.parse("none");
+    }
+    public static Formation<?,?> getFormation(Identifier key){
+        //TODO update when i have changed registries to use new v2
+        return null;
+    }
+
     public void encode(ByteBuf buf, RegistryAccess access){
         ByteBufHelpers.encodeIdentifier(getFormationKey(access),buf);
         formation.runtimeDataSyncHandler().encode(runtimeData,buf,access);
         formation.stateHandlerSyncHandler().encode(stateHandler,buf,access);
     }
-    public Identifier getFormationKey(RegistryAccess access){
-        //TODO update when i have changed registries to use new v2
-        return Identifier.parse("none");
-    }
     public void decode(ByteBuf buf,RegistryAccess access){
-        //TODO
+        runtimeData = getFormation().runtimeDataSyncHandler().decode(buf,access);
+        stateHandler = getFormation().stateHandlerSyncHandler().decode(buf,access);
     }
     //if no formation instance exists use this
     public static FormationInstance<?,?> initialDecode(ByteBuf buf,RegistryAccess access){
-        return  null;//TODO
+        Formation<?,?> formation = getFormation(ByteBufHelpers.decodeIdentifier(buf));
+        return formation == null ? null : formation.createFormationInstance(buf,access);
+    }
+
+    public void write(ValueOutput output, RegistryAccess access) {
+        output.putString("formation",getFormationKey(access).toString());
+        formation.runtimeDataSerializer().write(runtimeData,output.child("runtime_data"),access);
+        formation.stateHandlerSerializer().write(stateHandler,output.child("state_handler"),access);
+    }
+
+    public static FormationInstance<?,?> load(ValueInput input,RegistryAccess access){
+        Formation<?,?> formation = getFormation(Identifier.parse(input.getStringOr("formation","none")));
+        if(formation == null) return malformed();
+
+        return formation.createFormationInstance(input.childOrEmpty("runtime_data"),input.childOrEmpty("state_handler"),access);
     }
 }
